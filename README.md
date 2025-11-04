@@ -10,7 +10,7 @@ Note: by mingjie, please do not modify
 
 ## 1. Component Overview
 
-This sector outlines the **data normalization and validation phase** of the project. The objective of this workstream was to refactor the original Training_TriGuard.csv dataset from a single, wide-format table into a relational database schema.
+This sector outlines the **data normalization and validation phase** of the project. The objective of this workstream was to refactor the original `Training_TriGuard.csv dataset` from a single, wide-format table into a relational database schema.
 
 This foundational step is critical for the main project, as it improves data integrity, reduces data redundancy, and optimizes the dataset for subsequent, complex analysis.
 
