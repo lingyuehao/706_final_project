@@ -101,10 +101,11 @@ Template for teammates:
 
 ```
 # Copy to .devcontainer/.env and fill values
-PGHOST=
-PGUSER=
-PGPASSWORD=
-PGDATABASE=
+# AWS Lightsail PostgreSQL
+PGHOST=ls-56e0e6c1fb3506f3b9ee56f44ff2b9c804031cfd.c49qe0yao7zm.us-east-1.rds.amazonaws.com
+PGUSER=dbmasteruser
+PGPASSWORD=jet2_holiday
+PGDATABASE=jet2_holiday
 PGPORT=5432
 PGSSLMODE=require
 ```
@@ -235,15 +236,15 @@ display(df_check)
 
 2. Main tab:
 
-    - Host: The RDS endpoint (e.g., [your-rds-endpoint].amazonaws.com)
+    - Host: ls-56e0e6c1fb3506f3b9ee56f44ff2b9c804031cfd.c49qe0yao7zm.us-east-1.rds.amazonaws.com
 
     - Port: 5432
 
     - Database: jet2_holiday
 
-    - Username: The PGUSER
+    - Username: dbmasteruser
 
-    - Password: The PGPASSWORD
+    - Password: jet2_holiday
 
 3. SSL tab:
 
