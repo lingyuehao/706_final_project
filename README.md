@@ -18,13 +18,13 @@ This README provides a comprehensive guide for the project, covering environment
 
 - **Part 3: Getting Started** Provides the practical connection details for both Jupyter and DBeaver, and outlines the next steps for data analysis.
 
-# Part 1: Environment Setup
+## Part 1: Environment Setup
 
 This guide walks through the process from a fresh clone to a working setup.
 
 **TL;DR:** Copy the files below, fill the local `.env`, and Reopen in Container. The database is already initialized and populated. Proceed to **Part 3** to connect.
 
-## Repository Layout
+### Repository Layout
 ```
 .
 ├─ .devcontainer/
@@ -38,9 +38,9 @@ This guide walks through the process from a fresh clone to a working setup.
 └─ .env.example
 ```
 
-## Dev Container Configuration
+### Dev Container Configuration
 
-### .devcontainer/docker-compose.yml
+#### .devcontainer/docker-compose.yml
 
 Single service dev container (connects to RDS directly):
 
@@ -58,7 +58,7 @@ services:
       PGSSLMODE: "require"
 ```
 
-### .devcontainer/devcontainer.json
+#### .devcontainer/devcontainer.json
 
 Installs psql client and Python deps on first boot.
 
@@ -80,9 +80,9 @@ Installs psql client and Python deps on first boot.
 }
 ```
 
-## Environment Variables
+### Environment Variables
 
-### .devcontainer/.env (Local only, do not commit)
+#### .devcontainer/.env (Local only, do not commit)
 
 Fill with the RDS connection details. Example:
 
@@ -95,7 +95,7 @@ PGPORT=5432
 PGSSLMODE=require
 ```
 
-### .env.example (Committed)
+#### .env.example (Committed)
 
 Template for teammates:
 
@@ -111,7 +111,7 @@ PGSSLMODE=require
 
 - **Security tip:** Never commit `.devcontainer/.env`. Add it to `.gitignore`.
 
-## Python Dependencies
+### Python Dependencies
 
 Minimal additions for DB + Parquet (append to the existing `requirements.txt`):
 
@@ -122,7 +122,7 @@ python-dotenv>=1.0
 pyarrow>=16.0
 ```
 
-## Start the Dev Container
+### Start the Dev Container
 
 1. Open the repo in VS Code.
 
@@ -133,9 +133,9 @@ pyarrow>=16.0
 4. Once finished, proceed to **Part 3**.
 
 
-# Part 2: Data Normalization Process
+## Part 2: Data Normalization Process
 
-## Current Database State
+### Current Database State
 
 The entire "bootstrap" and "normalization" process described below has been completed by Mingjie.
 
@@ -147,13 +147,13 @@ Team members **do not** need to run any bootstrap or data loading scripts. The d
 
 The following sections simply document how this state was achieved.
 
-## Workstream Objective
+### Workstream Objective
 
 This sector outlines the **data normalization and validation phase** of the project. The objective of this workstream was to refactor the original `Training_TriGuard.csv dataset` from a single, wide-format table into a relational database schema.
 
 This foundational step is critical, as it improves data integrity, reduces data redundancy, and optimizes the dataset for subsequent analysis.
 
-## Transformation Process
+### Transformation Process
 
 - **Original Source:** `Training_TriGuard.csv` (A single, denormalized table).
 
@@ -161,7 +161,7 @@ This foundational step is critical, as it improves data integrity, reduces data 
 
 - **Action:** This script processes the original CSV and splits its columns into five logically distinct tables, linked by foreign keys.
 
-## Normalized Output Tables
+### Normalized Output Tables
 
 The transformation resulted in the following five CSV files (which are now tables in `stg`):
 
@@ -175,7 +175,7 @@ The transformation resulted in the following five CSV files (which are now table
 
 5. `driver`: Dimension table with driver information.
 
-## Validation and Integrity Check
+### Validation and Integrity Check
 
 To confirm that the splitting process was accurate, a "sanity check" was performed using the `data_inspection.ipynb` notebook.
 
@@ -193,11 +193,11 @@ To confirm that the splitting process was accurate, a "sanity check" was perform
 
 **Result:** The test passed, confirming the normalization was successful, accurate, and lossless before the data was loaded.
 
-# Part 3: Getting Started (Connecting and Workflow)
+## Part 3: Getting Started (Connecting and Workflow)
 
 After completing Part 1 (launching the Dev Container), the database is ready to be queried.
 
-## Connect from Jupyter / Python
+### Connect from Jupyter / Python
 
 This snippet can be used in a notebook (e.g., `notebooks/01_connect_and_test.ipynb`):
 
@@ -229,7 +229,7 @@ df_check = pd.read_sql("SELECT * FROM stg.claim LIMIT 5", engine)
 display(df_check)
 ```
 
-## Connect from DBeaver (Local Desktop)
+### Connect from DBeaver (Local Desktop)
 
 1. New Connection → PostgreSQL
 
@@ -251,7 +251,7 @@ display(df_check)
 
 4. Test Connection → Finish.
 
-## Common Issues
+### Common Issues
 
 - Auth/timeout: Ensure the RDS security group allows the current client IP address on port 5432.
 
@@ -259,7 +259,7 @@ display(df_check)
 
 - Notebook cannot connect: Confirm the container has the env vars (echo $PGHOST) and that psql works from the VS Code terminal.
 
-## Next Steps
+### Next Steps
 
 1. Connect to the database using the snippets in Notebook or Dbeaver.
 
