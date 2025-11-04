@@ -263,4 +263,4 @@ display(df_check)
 
 1. Connect to the database using the snippets in Notebook or Dbeaver.
 
-2. Verify read access by running a query (e.g., SELECT * FROM stg.claim LIMIT 5).
+2. tbc
