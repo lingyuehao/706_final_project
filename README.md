@@ -322,7 +322,7 @@ Successfully joined accident characteristics with claim indicators including:
 - Policy report filed (0/1)
 - In-network bodyshop usage (yes/no)
   
-<img src="analysis/tina_accident/results_screenshot/accident_q7.png"  width="500" height="250">
+<img src="analysis/tina_accident/results_screenshot/accident_q7.png"  width="500">
 
 
 **Query 8: High Subrogation Potential Claims**
@@ -366,7 +366,7 @@ The analysis categorized accidents into subrogation priority levels:
 **Recommended actions for the company:**
 1. Implement processes to ensure witness information is captured at the scene. This is the single most critical gap in the current data.
 
-2. With over 70% of claims involving multiple vehicles, these represent the largest pool for potential subrogation—if witness and documentation gaps can be addressed.
+2. With over 70% of claims involving multiple vehicles, these represent the largest pool for potential subrogation, if witness and documentation gaps can be addressed.
 
 3. The 6,190 "multi_vehicle_clear" claims with police reports (3,711) should be the first target for subrogation investigation, as fault determination is clearer.
 
