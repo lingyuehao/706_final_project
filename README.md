@@ -322,7 +322,7 @@ Successfully joined accident characteristics with claim indicators including:
 - Policy report filed (0/1)
 - In-network bodyshop usage (yes/no)
   
-![accident query 7 result](analysis/tina_accident/results_screenshot/accident_q7.png)
+<img src="analysis/tina_accident/results_screenshot/accident_q7.png"  width="500" height="250">
 
 
 **Query 8: High Subrogation Potential Claims**
