@@ -265,3 +265,94 @@ display(df_check)
 1. Connect to the database using the snippets in Notebook or Dbeaver.
 
 2. tbc
+
+---
+## Analysis Results
+---
+
+### Analysis Results of SQL analysis performed on the `accident` and `claim` datasets
+
+This section documents the key findings from the SQL analysis performed on the `accident` and `claim` datasets to identify subrogation opportunities.
+SQL queries are in `analysis/tina_accident/accident_claim.sql`.
+
+**Query 1: Basic Statistics**
+![accident query 1 result](analysis/tina_accident/results_screenshot/accident_q1.png)
+- Total accidents: 12
+- Unique accident sites: 4
+- Unique accident types: 3
+
+**Query 2: Detailed Accident Records**
+The dataset contains 12 accidents with the following distribution:
+- Accident sites: Parking Area, Unknown, Highway/Intersection, Local
+- Accident types: multi_vehicle_clear, multi_vehicle_unclear, single_car
+- Accident keys range from 1 to 12
+![accident query 2 result](analysis/tina_accident/results_screenshot/accident_q2.1.png)
+![accident query 2 result](analysis/tina_accident/results_screenshot/accident_q2.2.png)
+
+**Query 3: Accident Type Distribution**
+![accident query 3 result](analysis/tina_accident/results_screenshot/accident_q3.png)
+The dataset is evenly distributed across three accident types, with multi-vehicle accidents (both clear and unclear) representing 66.67% of all accidents.
+
+**Query 4: Accident Site Distribution**
+![accident query 4 result](analysis/tina_accident/results_screenshot/accident_q4.png)
+Accidents are evenly distributed across all four site types (25% each).
+
+**Query 5: Multi-Vehicle Accident Analysis**
+![accident query 5 result](analysis/tina_accident/results_screenshot/accident_q5.png)
+8 out of 12 accidents (66.67%) are multi-vehicle incidents, indicating significant subrogation potential across the dataset.
+
+**Query 6: Accident-Site-Type Combinations**
+![accident query 6 result](analysis/tina_accident/results_screenshot/accident_q6.png)
+The analysis shows all 12 unique combinations of accident sites and types, with each combination appearing exactly once. This suggests a well-distributed sample dataset covering various scenarios.
+
+**Query 7: Comprehensive Accident-Claim Join**
+Successfully joined accident characteristics with claim indicators including:
+- Witness presence (Y/N)
+- Policy report filed (0/1)
+- In-network bodyshop usage (yes/no)
+![accident query 7 result](analysis/tina_accident/results_screenshot/accident_q7.png)
+
+**Query 8: High Subrogation Potential Claims**
+This query identifies claims with the highest subrogation potential (multi-vehicle + witnesses + police report).
+![accident query 8 result](analysis/tina_accident/results_screenshot/accident_q8.png)
+Query 8 returned no results, indicating that none of the multi-vehicle accidents in this dataset have both a witness present and a police report filed. This suggests limited high-priority subrogation opportunities in the current dataset.
+
+**Query 9: Accident Type Subrogation Indicators**
+![accident query 9 result](analysis/tina_accident/results_screenshot/accident_q9.png)
+No claims in the dataset have witnesses present, which severely limits subrogation potential. While police reports are filed for 60-65% of multi-vehicle claims, the absence of witnesses reduces the strength of potential subrogation cases.
+
+**Query 10: Accident Site Subrogation Indicators**
+![accident query 10 result](analysis/tina_accident/results_screenshot/accident_q10.png)
+Across all accident sites, approximately 60% of claims have police reports filed, but again, the absence of witnesses across all locations limits subrogation effectiveness.
+
+**Query 11: Comprehensive Subrogation Priority View**
+![accident query 11 result](analysis/tina_accident/results_screenshot/accident_q11.png)
+The analysis categorized accidents into subrogation priority levels:
+- Low Priority: Single-car accidents (accidents 4, 5, 6, 9)
+- Medium Priority: Multi-vehicle accidents without both witnesses and police reports (accidents 1, 2, 3, 7, 8, 10, 11, 12)
+- High Priority: None identified (would require multi-vehicle + witness + police report)
+
+#### Key Insights and Recommendations
+1. Despite 66.67% of accidents being multi-vehicle incidents, the absence of witness documentation means no claims achieve "high priority" subrogation status.
+
+2. 60-65% of claims have police reports filed, which is a positive indicator but insufficient alone for strong subrogation cases.
+
+3. Multi-Vehicle Accident Distribution: 
+   - multi_vehicle_clear: 6,190 claims (34.4%)
+   - multi_vehicle_unclear: 6,555 claims (36.4%)
+   - Combined multi-vehicle total: 12,745 claims (70.8% of all claims)
+
+**Recommended actions for the company:**
+1. Implement processes to ensure witness information is captured at the scene. This is the single most critical gap in the current data.
+
+2. With over 70% of claims involving multiple vehicles, these represent the largest pool for potential subrogation—if witness and documentation gaps can be addressed.
+
+3. The 6,190 "multi_vehicle_clear" claims with police reports (3,711) should be the first target for subrogation investigation, as fault determination is clearer.
+
+4. Investigation Priority: 
+   - First: Multi-vehicle accidents at Highway/Intersection with police reports
+   - Second: Multi-vehicle accidents at Unknown/Parking Area with police reports
+   - Third: All other multi-vehicle accidents
+
+5. Data Quality: The "Unknown" accident site category (4,310 claims, 23.9%) should be minimized through better initial claims documentation.
+---
