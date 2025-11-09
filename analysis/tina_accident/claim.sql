@@ -1,4 +1,4 @@
--- basic data information
+-- basic data information for claim
 -- total number of claims
 SELECT COUNT(*) AS total_claims
 FROM stg.claim;
@@ -47,7 +47,6 @@ FROM stg.claim
 GROUP BY in_network_bodyshop
 ORDER BY claim_count DESC;
 
-
 -- Cross-tabulation: witness presence vs police report
 SELECT 
     witness_present_ind,
@@ -83,3 +82,4 @@ SELECT
     COUNT(DISTINCT vehicle_key) AS unique_vehicles,
     COUNT(DISTINCT driver_key) AS unique_drivers
 FROM stg.claim;
+
