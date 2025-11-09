@@ -1,0 +1,5 @@
+education,living_status,avg_payout,num_claims
+HigherEdu,Rent,3662.04,5563
+NonEdu,Rent,3643.43,2558
+HigherEdu,Own,3567.04,6919
+NonEdu,Own,3538.16,2960
