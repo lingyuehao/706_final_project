@@ -234,7 +234,7 @@ if r1.height > 0:
         diff = hi["avg_payout"] - lo["avg_payout"]
         pct = diff / lo["avg_payout"] * 100 if lo["avg_payout"] != 0 else 0
         print(
-            f"Narrative: Higher-education policyholders file {int(hi['total_claims'])} claims "
+            f"Insight: Higher-education policyholders file {int(hi['total_claims'])} claims "
             f"with avg payout ${_fmt(hi['avg_payout'])}, vs non-educated "
             f"{int(lo['total_claims'])} claims at ${_fmt(lo['avg_payout'])}. "
             f"Difference: {_fmt(pct)}% higher payouts."
@@ -246,7 +246,7 @@ if r2.height > 0:
     top_vol = r2.sort("num_claims", descending=True).row(0, named=True)
     top_avg = r2.sort("avg_payout", descending=True).row(0, named=True)
     print(
-        f"Narrative: Most frequent income level = {_fmt(top_vol['annual_income'])} "
+        f"Insight: Most frequent income level = {_fmt(top_vol['annual_income'])} "
         f"with {int(top_vol['num_claims'])} claims (avg payout ${_fmt(top_vol['avg_payout'])}). "
         f"Highest avg payout = {_fmt(top_avg['annual_income'])} "
         f"with ${_fmt(top_avg['avg_payout'])}."
@@ -260,7 +260,7 @@ if r3.height > 0:
     lo = rows.get(0.0) or rows.get(0) or rows.get("0")
     if hi and lo:
         print(
-            f"Narrative: On average, higher-education policyholders had "
+            f"Insight: On average, higher-education policyholders had "
             f"{_fmt(hi['avg_past_claims'])} past claims vs non-educated "
             f"{_fmt(lo['avg_past_claims'])}."
         )
@@ -271,7 +271,7 @@ if r4.height > 0:
     top_avg = r4.sort("avg_payout", descending=True).row(0, named=True)
     top_vol = r4.sort("num_claims", descending=True).row(0, named=True)
     print(
-        f"Narrative: Highest avg payout group = {top_avg['education']}/{top_avg['living_status']} "
+        f"Insight: Highest avg payout group = {top_avg['education']}/{top_avg['living_status']} "
         f"(${_fmt(top_avg['avg_payout'])}, {int(top_avg['num_claims'])} claims). "
         f"Most frequent group = {top_vol['education']}/{top_vol['living_status']} "
         f"with {int(top_vol['num_claims'])} claims."
@@ -283,7 +283,7 @@ if r5.height > 0:
     low = r5.sort("prev_claims").row(0, named=True)
     high = r5.sort("prev_claims", descending=True).row(0, named=True)
     print(
-        f"Narrative: Policyholders with {int(low['prev_claims'])} prior claims "
+        f"Insight: Policyholders with {int(low['prev_claims'])} prior claims "
         f"filed {int(low['new_claims'])} new ones (avg payout ${_fmt(low['avg_payout'])}). "
         f"Those with {int(high['prev_claims'])} prior claims filed "
         f"{int(high['new_claims'])} new ones (avg payout ${_fmt(high['avg_payout'])})."
@@ -296,7 +296,7 @@ if r6.height > 0:
     top_total = r6.sort("total_payout", descending=True).row(0, named=True)
     top_num = r6.sort("num_claims", descending=True).row(0, named=True)
     print(
-        f"Narrative: Highest avg payout channel = {top_avg['channel']} "
+        f"Insight: Highest avg payout channel = {top_avg['channel']} "
         f"(${_fmt(top_avg['avg_payout'])}). Highest total payout = {top_total['channel']} "
         f"(${_fmt(top_total['total_payout'])}). Most active channel = {top_num['channel']} "
         f"({int(top_num['num_claims'])} claims)."
