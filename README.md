@@ -134,7 +134,17 @@ pyarrow>=16.0
 4. Once finished, proceed to **Part 3**.
 
 
-## Part 2: Data Normalization Process
+## Part 2: Data Ingestion, Storage and Processing
+
+###  Cloud Storage and Deployment (AWS Lightsail)
+
+To ensure persistent data access and enable team collaboration, all cleaned tables (`Claim`, `Vehicle`, `Driver`, `Policyholder`, and `Accident`) were uploaded to an AWS Lightsail instance. AWS Lightsail provides a simplified cloud infrastructure with built-in SSH access and managed PostgreSQL database capabilities, making it suitable for lightweight data warehousing and remote querying. The Lightsail instance hosts a PostgreSQL container that mirrors our local schema (`stg`), allowing real-time querying and integration with analysis scripts in the `analysis/` folder.  
+This setup ensures:
+
+- Secure and persistent cloud storage  
+- Seamless remote access for team members
+
+
 
 ### Data Storage and Schema Design
 
