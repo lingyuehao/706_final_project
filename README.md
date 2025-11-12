@@ -139,11 +139,15 @@ pyarrow>=16.0
 ###  Cloud Storage and Deployment (AWS Lightsail)
 
 To ensure persistent data access and enable team collaboration, all cleaned tables (`Claim`, `Vehicle`, `Driver`, `Policyholder`, and `Accident`) were uploaded to an AWS Lightsail instance. AWS Lightsail provides a simplified cloud infrastructure with built-in SSH access and managed PostgreSQL database capabilities, making it suitable for lightweight data warehousing and remote querying. The Lightsail instance hosts a PostgreSQL container that mirrors our local schema (`stg`), allowing real-time querying and integration with analysis scripts in the `analysis/` folder.  
+
 This setup ensures:
 
 - Secure and persistent cloud storage  
 - Seamless remote access for team members
 
+<p align="center">
+  <img src="data/AWS.png" alt="TriGuard ERD" width="700">
+</p>
 
 
 ### Data Storage and Schema Design
