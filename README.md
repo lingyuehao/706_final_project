@@ -136,6 +136,28 @@ pyarrow>=16.0
 
 ## Part 2: Data Normalization Process
 
+### Data Storage and Schema Design
+
+To improve data consistency and enable efficient subrogation analysis, I normalized the original wide Training_TriGuard.csv dataset into five relational tables: Claim, Vehicle, Driver, Policyholder, and Accident. This decomposition follows a star schema, where Claim acts as the central fact table, linking to four dimension tables through foreign keys. The process was completed using Python (pandas) by extracting unique keys and attributes for each entity and ensuring referential integrity between tables.
+
+| Table            | Description                                                                                                     | Primary Key        | Key Columns / Notes                                                                                   |
+| ---------------- | --------------------------------------------------------------------------------------------------------------- | ------------------ | ----------------------------------------------------------------------------------------------------- |
+| **Claim**        | Central fact table containing subrogation indicators, payout estimates, liability percentage, and related keys. | `claim_number`     | Links to all four dimension tables (`accident_key`, `policyholder_key`, `vehicle_key`, `driver_key`). |
+| **Vehicle**      | Stores information about the insured vehicle such as make year, price, weight, and mileage.                     | `vehicle_key`      | Linked to Claim via `vehicle_key`.                                                                    |
+| **Driver**       | Contains driver attributes like age, gender, license years, and driving state.                                  | `driver_key`       | Linked to Claim via `driver_key`.                                                                     |
+| **Policyholder** | Includes policyholder-level data such as policy state, tenure months, and prior claims count.                   | `policyholder_key` | Linked to Claim via `policyholder_key`.                                                               |
+| **Accident**     | Records accident-related information including location, date, weather, and severity.                           | `accident_key`     | Linked to Claim via `accident_key`.                                                                   |
+
+Each table has been exported as a CSV file and loaded into the PostgreSQL stg schema.
+
+### Entity Relationship Diagram (ERD)
+
+The logical schema of the TriGuard Subrogation dataset is illustrated below:
+
+<p align="center">
+  <img src="data/TriGuard_ERD_pretty.png" alt="TriGuard ERD" width="700">
+</p>
+
 ### Current Database State
 
 The entire "bootstrap" and "normalization" process described below has been completed by Mingjie.
