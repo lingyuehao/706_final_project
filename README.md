@@ -377,3 +377,10 @@ The analysis categorized accidents into subrogation priority levels:
 
 5. Data Quality: The "Unknown" accident site category (4,310 claims, 23.9%) should be minimized through better initial claims documentation.
 ---
+
+### Logistic Regression on Subrogation
+
+![Log regression summary table](analysis/bruce_driver/Log_reg_result.png)
+- Logistic regression confirms liab_prct as the key driver, while controlling for others and quantifying independent effects.
+- The model’s pseudo R² ≈ 0.10 suggests there are other unmodeled factors (perhaps policy type, damages, or party fault data).
+- Correlations of each variable with subrogation is stored in [this correlations table](analysis/bruce_driver/driver_subrogation_correlations.csv).
