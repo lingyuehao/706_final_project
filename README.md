@@ -503,6 +503,67 @@ Findings:
 - Phone/Broker submissions outperform Online for effective subrogation follow-up.
 
 
+#### Statistics Analysis
+
+<div align="center"> <img src="analysis/lingue_vehicle/summary.png" width="520"/> </div>
+
+Highlights：
+
+- Avg subrogation rate: 0.2286
+
+- Avg claim payout: $3602
+
+- Avg liability percentage: 38.28%
+
+- Avg vehicle price: $30.6k
+
+- Avg mileage: ~80k miles
+
+These baselines provide a reference point for later comparisons.
+
+
+We then examined main categorical fields (channel, day of week, witness indicator, police report indicator, vehicle category) to identify dominant levels and potential anomalies.
+
+<div align="center"> <img src="analysis/lingue_vehicle/c1.png" width="600"/> </div>
+
+#### Key takeaways：
+
+- Most claims come from Broker and Phone channels.
+
+- Claim volumes are relatively even across weekdays.
+
+- Witness and police report indicators are mostly complete (only one null).
+
+- Vehicle categories are evenly distributed across Compact / Medium / Large.
+
+
+We computed correlations between key numeric variables to evaluate basic relationships.
+
+<div align="center"> <img src="analysis/lingue_vehicle/correlation.png" width="520"/> </div>
+
+
+- Subrogation has almost zero correlation with vehicle price or mileage.
+
+- Liability percentage shows a moderate negative correlation (–0.30) with subrogation.
+
+- Claim payout and vehicle price are essentially uncorrelated.
+
+- This confirms that vehicle value itself is not driving subrogation outcomes.
+
+
+We also fit an OLS regression with the following predictors:
+vehicle_price, claim_est_payout, liab_prct, witness_present, policy_report_filed.
+
+<div align="center"> <img src="analysis/lingue_vehicle/c2.png" width="650"/> </div>
+
+- Liability percentage is the strongest factor (negative direction).
+
+- Witness present significantly increases the likelihood of subrogation.
+
+- Police report filed has a smaller but positive effect.
+
+- Very low R² (~0.12) indicates subrogation decisions depend on additional factors not captured in the dataset.
+  
 
 ### Logistic Regression on Subrogation
 
