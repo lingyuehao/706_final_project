@@ -505,7 +505,7 @@ Findings:
 
 #### Statistics Analysis
 
-<div align="center"> <img src="analysis/lingue_vehicle/summary.png" width="520"/> </div>
+<div align="center"> <img src="analysis/lingyue_vehicle/summary.png" width="520"/> </div>
 
 Highlights：
 
@@ -524,7 +524,8 @@ These baselines provide a reference point for later comparisons.
 
 We then examined main categorical fields (channel, day of week, witness indicator, police report indicator, vehicle category) to identify dominant levels and potential anomalies.
 
-<div align="center"> <img src="analysis/lingue_vehicle/c1.png" width="600"/> </div>
+<div align="center"> <img src="analysis/lingyue_vehicle/c1.png" width="600"/> </div>
+<div align="center"> <img src="analysis/lingyue_vehicle/c2.png" width="600"/> </div>
 
 #### Key takeaways：
 
@@ -539,7 +540,7 @@ We then examined main categorical fields (channel, day of week, witness indicato
 
 We computed correlations between key numeric variables to evaluate basic relationships.
 
-<div align="center"> <img src="analysis/lingue_vehicle/correlation.png" width="520"/> </div>
+<div align="center"> <img src="analysis/lingyue_vehicle/correlation.png" width="520"/> </div>
 
 
 - Subrogation has almost zero correlation with vehicle price or mileage.
@@ -554,7 +555,7 @@ We computed correlations between key numeric variables to evaluate basic relatio
 We also fit an OLS regression with the following predictors:
 vehicle_price, claim_est_payout, liab_prct, witness_present, policy_report_filed.
 
-<div align="center"> <img src="analysis/lingue_vehicle/c2.png" width="650"/> </div>
+<div align="center"> <img src="analysis/lingyue_vehicle/c2.png" width="650"/> </div>
 
 - Liability percentage is the strongest factor (negative direction).
 
