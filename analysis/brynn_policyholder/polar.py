@@ -195,12 +195,12 @@ ORDER BY avg_payout DESC
 # Run all analyses
 # -------------------------------------------------------------------
 queries = {
-    "avg_payout_by_education": query1,
-    "claims_by_income": query2,
-    "past_claims_by_education": query3,
-    "education_vs_living_status": query4,
-    "past_claim_behavior": query5,
-    "channel_effect": query6,
+    "1. avg_payout_by_education": query1,
+    "2. claims_by_income": query2,
+    "3. past_claims_by_education": query3,
+    "4. education_vs_living_status": query4,
+    "5. past_claim_behavior": query5,
+    "6. channel_effect": query6,
 }
 
 
@@ -225,7 +225,7 @@ def run(name, sql):
     return df
 
 # ---- Query 1 ----
-r1 = run("avg_payout_by_education", queries["avg_payout_by_education"])
+r1 = run("1. avg_payout_by_education", queries["1. avg_payout_by_education"])
 if r1.height > 0:
     groups = {row["has_higher_ed"]: row for row in r1.iter_rows(named=True)}
     hi = groups.get(1.0) or groups.get(1) or groups.get("1")
@@ -234,6 +234,7 @@ if r1.height > 0:
         diff = hi["avg_payout"] - lo["avg_payout"]
         pct = diff / lo["avg_payout"] * 100 if lo["avg_payout"] != 0 else 0
         print(
+            f"-----------Query 1------------"
             f"Insight: Higher-education policyholders file {int(hi['total_claims'])} claims "
             f"with avg payout ${_fmt(hi['avg_payout'])}, vs non-educated "
             f"{int(lo['total_claims'])} claims at ${_fmt(lo['avg_payout'])}. "
@@ -241,11 +242,12 @@ if r1.height > 0:
         )
 
 # ---- Query 2 ----
-r2 = run("claims_by_income", queries["claims_by_income"])
+r2 = run("2. claims_by_income", queries["2. claims_by_income"])
 if r2.height > 0:
     top_vol = r2.sort("num_claims", descending=True).row(0, named=True)
     top_avg = r2.sort("avg_payout", descending=True).row(0, named=True)
     print(
+        f"-----------Query 2------------"
         f"Insight: Most frequent income level = {_fmt(top_vol['annual_income'])} "
         f"with {int(top_vol['num_claims'])} claims (avg payout ${_fmt(top_vol['avg_payout'])}). "
         f"Highest avg payout = {_fmt(top_avg['annual_income'])} "
@@ -253,24 +255,26 @@ if r2.height > 0:
     )
 
 # ---- Query 3 ----
-r3 = run("past_claims_by_education", queries["past_claims_by_education"])
+r3 = run("3. past_claims_by_education", queries["3. past_claims_by_education"])
 if r3.height > 0:
     rows = {row["has_higher_ed"]: row for row in r3.iter_rows(named=True)}
     hi = rows.get(1.0) or rows.get(1) or rows.get("1")
     lo = rows.get(0.0) or rows.get(0) or rows.get("0")
     if hi and lo:
         print(
+            f"-----------Query 3------------"
             f"Insight: On average, higher-education policyholders had "
             f"{_fmt(hi['avg_past_claims'])} past claims vs non-educated "
             f"{_fmt(lo['avg_past_claims'])}."
         )
 
 # ---- Query 4 ----
-r4 = run("education_vs_living_status", queries["education_vs_living_status"])
+r4 = run("4. education_vs_living_status", queries["4. education_vs_living_status"])
 if r4.height > 0:
     top_avg = r4.sort("avg_payout", descending=True).row(0, named=True)
     top_vol = r4.sort("num_claims", descending=True).row(0, named=True)
     print(
+        f"-----------Query 4------------"
         f"Insight: Highest avg payout group = {top_avg['education']}/{top_avg['living_status']} "
         f"(${_fmt(top_avg['avg_payout'])}, {int(top_avg['num_claims'])} claims). "
         f"Most frequent group = {top_vol['education']}/{top_vol['living_status']} "
@@ -278,11 +282,12 @@ if r4.height > 0:
     )
 
 # ---- Query 5 ----
-r5 = run("past_claim_behavior", queries["past_claim_behavior"])
+r5 = run("5. past_claim_behavior", queries["5. past_claim_behavior"])
 if r5.height > 0:
     low = r5.sort("prev_claims").row(0, named=True)
     high = r5.sort("prev_claims", descending=True).row(0, named=True)
     print(
+        f"-----------Query 5------------"
         f"Insight: Policyholders with {int(low['prev_claims'])} prior claims "
         f"filed {int(low['new_claims'])} new ones (avg payout ${_fmt(low['avg_payout'])}). "
         f"Those with {int(high['prev_claims'])} prior claims filed "
@@ -290,12 +295,13 @@ if r5.height > 0:
     )
 
 # ---- Query 6 ----
-r6 = run("channel_effect", queries["channel_effect"])
+r6 = run("6. channel_effect", queries["6. channel_effect"])
 if r6.height > 0:
     top_avg = r6.sort("avg_payout", descending=True).row(0, named=True)
     top_total = r6.sort("total_payout", descending=True).row(0, named=True)
     top_num = r6.sort("num_claims", descending=True).row(0, named=True)
     print(
+        f"-----------Query 6------------"
         f"Insight: Highest avg payout channel = {top_avg['channel']} "
         f"(${_fmt(top_avg['avg_payout'])}). Highest total payout = {top_total['channel']} "
         f"(${_fmt(top_total['total_payout'])}). Most active channel = {top_num['channel']} "
