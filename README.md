@@ -433,6 +433,76 @@ Findings:
 <p align="center"> <img src="analysis/lingyue_vehicle/query1-1.png" alt="Query 1 Vehicle Category vs Color" width="700"> <br> <img src="analysis/lingyue_vehicle/query1-2.png" alt="Query 1 Extended Results" width="700"> </p>
 
 
+#### Query 2: By Vehicle Price Band
+
+Purpose: Analyze whether higher-value vehicles are more likely to be subrogated and how payout ratios change by price.
+
+Findings:
+
+- Subrogation rate rises slightly with vehicle value.
+
+- Claim-to-value ratio decreases as price increases — expensive cars yield smaller proportional payouts.
+
+- Indicates lower loss severity per dollar value for luxury segments.
+
+<p align="center"> <img src="analysis/lingyue_vehicle/query2.png" alt="Query 2 Vehicle Price Band" width="700"> </p>
+
+
+#### Query 3: By Mileage Band
+
+Purpose: Examine how vehicle mileage correlates with subrogation frequency, liability percentage, and payout level.
+
+Findings:
+
+- Subrogation rate slightly declines as mileage increases.
+
+- Newer, low-mileage cars (<10k) have higher payouts and slightly lower liability percentages, implying clearer fault assignment.
+
+<p align="center"> <img src="analysis/lingyue_vehicle/query3.png" alt="Query 3 Mileage Band" width="700"> </p>
+
+
+#### Query 4: Witness & Police Report Indicators
+
+Purpose: Evaluate the effect of documentation (witness presence and police reports) on subrogation outcomes per vehicle category.
+
+Findings:
+
+- “Witness = Y & Police Report = 1” produces the highest subrogation rates:
+  
+  -- Compact: 0.3360 vs 0.1546 when N/0
+
+  -- Large: 0.3227 vs 0.1500
+
+  -- Medium: 0.3226 vs 0.1667
+
+- Documentation significantly boosts subrogation likelihood across all segments.
+
+<p align="center"> <img src="analysis/lingyue_vehicle/query4.png" alt="Query 4 Witness and Police Report Indicators" width="700"> </p>
+
+
+#### Query 5: Category × Channel Interaction
+
+Purpose: Compare subrogation frequency across claim submission channels for each vehicle type.
+
+Findings:
+
+- Phone and Broker channels outperform Online in subrogation rate (~0.24 vs ~0.22).
+
+- Average payouts are similar, suggesting channel impacts probability, not payout magnitude.
+
+<p align="center"> <img src="analysis/lingyue_vehicle/query5.png" alt="Query 5 Category vs Channel" width="700"> </p>
+
+#### Summary
+
+- Compact vehicles are most subrogation-prone, especially in silver/black/red colors.
+
+- Witness and police documentation more than doubles subrogation odds.
+
+- Low-mileage and mid-value vehicles show favorable recovery potential.
+
+- Phone/Broker submissions outperform Online for effective subrogation follow-up.
+
+
 
 ### Logistic Regression on Subrogation
 
