@@ -414,6 +414,26 @@ The analysis categorized accidents into subrogation priority levels:
 5. Data Quality: The "Unknown" accident site category (4,310 claims, 23.9%) should be minimized through better initial claims documentation.
 ---
 
+### Analysis Results (Claim & Vehicle Tables）
+
+#### Query 1: By Vehicle Category & Color
+
+Purpose: Compare vehicle category and color against subrogation likelihood, payout behavior, and claim-to-value ratio.
+
+Findings:
+
+- Highest subrogation rate: Compact / silver (0.2737) — followed by black (0.2525) and red (0.2409).
+
+- Compact cars overall subrogate more frequently than Large or Medium vehicles.
+
+- Subrogated claims tend to have slightly higher average payouts (e.g., Compact/silver ≈ $3,801 vs. $3,634 non-subro).
+
+- Claim-to-value ratio remains around 0.16–0.17, suggesting consistent proportional payout levels.
+
+<p align="center"> <img src="analysis/lingyue_vehicle/query1-1.png" alt="Query 1 Vehicle Category vs Color" width="700"> <br> <img src="analysis/lingyue_vehicle/query1-2.png" alt="Query 1 Extended Results" width="700"> </p>
+
+
+
 ### Logistic Regression on Subrogation
 
 ![Log regression summary table](analysis/bruce_driver/Log_reg_result.png)
