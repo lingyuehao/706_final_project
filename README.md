@@ -572,3 +572,8 @@ vehicle_price, claim_est_payout, liab_prct, witness_present, policy_report_filed
 - Logistic regression confirms liab_prct as the key driver, while controlling for others and quantifying independent effects.
 - The model’s pseudo R² ≈ 0.10 suggests there are other unmodeled factors (perhaps policy type, damages, or party fault data).
 - Correlations of each variable with subrogation is stored in [this correlations table](analysis/bruce_driver/driver_subrogation_correlations.csv).
+
+
+
+
+### Analysis Results of SQL analysis performed on the `accident` and `policyholder` datasets
