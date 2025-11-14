@@ -580,25 +580,52 @@ vehicle_price, claim_est_payout, liab_prct, witness_present, policy_report_filed
 
 
 **Query 1: Avg Payout by Education Level**
+
 Joined Claim with Policyholder to compare average payout and claim volume between policyholders with vs. without higher education.
+
 <img width="342" height="159" alt="Screenshot 2025-11-14 at 10 40 47 AM" src="https://github.com/user-attachments/assets/e24d23ef-dcc3-4d24-91dc-153e7cd8b449" />
-- *Insights:*
+- **Insights:**
   - Higher-education group: 12,482 claims, average payout $3,609
   - Non-education group: 5,518 claims, average payout $3,586
   - Very similar payout levels across groups
   - Education does not meaningfully influence payout severity
 
 **Query 2: Claims Distribution by Income**
+
 Grouped claims by annual income and calculated claim frequency and average payout.
+
 <img width="311" height="271" alt="Screenshot 2025-11-14 at 10 42 09 AM" src="https://github.com/user-attachments/assets/af616024-f757-4a94-ace0-4cd060e1b34a" />
-- *Insights:*
+
+- **Insights:**
   - A few income brackets dominate claim volume (e.g. 30k band with 3,818 claims).
   - High-income bands file far fewer claims.
   - Average payout varies widely due to low observation counts in many brackets.
   - Income is not correlated with stronger subrogation documentation.
 
-**Query 3: d**
-**Query 4: d**
+**Query 3: Past Claim History by Education**
+
+Calculated average number of past claims for each education segment.
+
+<img width="291" height="146" alt="Screenshot 2025-11-14 at 10 45 00 AM" src="https://github.com/user-attachments/assets/6f1f9f67-b327-434d-bb9d-27ad73b7d17f" />
+
+- Insights:
+  - Both groups averaged around 4 past claims.
+  - No meaningful behavioral difference.
+  - Not useful for detecting recoverable vs. non-recoverable claims.
+
+**Query 4: Education × Living Status Segmentation**
+
+Computed average payout and claim counts across living status (rent vs own) stratified by education.
+
+<img width="421" height="169" alt="Screenshot 2025-11-14 at 10 46 07 AM" src="https://github.com/user-attachments/assets/bfb98b82-6539-4841-94dc-837d6438cc24" />
+
+- Insights:
+
+  - Renters (both education levels) filed more claims.
+
+  - Claim severity varies modestly between cells (~$3,530–$3,660).
+
+  - Useful for demographic profiling but not for subrogation opportunity.
 **Query 5: d**
 **Query 6: d**
 
