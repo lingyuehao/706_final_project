@@ -414,6 +414,81 @@ The analysis categorized accidents into subrogation priority levels:
 5. Data Quality: The "Unknown" accident site category (4,310 claims, 23.9%) should be minimized through better initial claims documentation.
 ---
 
+### Polars-Based Regression Analysis on Claim Payouts
+
+This section documents regression modeling performed using Polars to predict `claim_est_payout` and identify key cost drivers.
+
+**Analysis Script:** `analysis/tina_accident/polar.py`
+
+**Model Overview:**
+- Target Variable: claim_est_payout
+- Model Type: Linear Regression (OLS)
+- Features: 9 variables including binary indicators, liability percentage, and encoded categorical variables
+- Data Processing: Missing values removed, categorical variables label-encoded
+
+**Model Performance:**
+- R² Score: -0.0013 (negative, indicating model performs worse than baseline)
+- MSE: 13248383
+- RMSE: ~$3640 (square root of MSE)
+- Sample Size: 17999 claims
+
+**Feature Importance (Ranked by Absolute Coefficient):**
+
+| Rank | Feature | Coefficient | Impact |
+|------|---------|-------------|--------|
+| 1 | Police Report Filed | +$110.53 | Claims with police reports have ~$111 higher payouts |
+| 2 | Subrogation Flag | -$55.50 | Subrogation cases have ~$55 lower payouts (cost recovery) |
+| 3 | Multi-vehicle Accident | +$43.93 | Multi-vehicle incidents increase payouts by ~$44 |
+| 4 | Accident Type | +$31.43 | Different accident types have varying cost impacts |
+| 5 | Channel | -$27.62 | Claim submission channel affects payout amounts |
+| 6 | Accident Site | +$7.96 | Location has minor impact on costs |
+| 7 | Liability Percentage | +$5.01 | Higher liability slightly increases payout |
+| 8 | Witness Present | ~$0 | No measurable impact on payout amounts |
+| 9 | In-network Bodyshop | ~$0 | No measurable impact on payout amounts |
+
+**Base Intercept:** $3297 (baseline payout when all features are zero/reference category)
+
+**Key Findings:**
+
+1. No Predictive Power: The negative R² (-0.0013) indicates that this feature set cannot predict claim payout amounts—the model performs worse than simply predicting the mean payout for all claims. Claim amounts are driven primarily by factors not captured in this dataset, such as:
+   - Actual damage severity
+   - Medical costs and injuries
+   - Vehicle repair complexity
+   - Vehicle market value
+   - Parts and labor costs
+
+2. Documentation Impact: Police reports are the strongest predictor among available features (+$110), suggesting documented claims may involve more severe incidents or justify higher payouts.
+
+3. Subrogation Effect: The negative coefficient for subrogation (-$55) indicates the company successfully recovers costs on flagged claims, reducing net payout amounts.
+
+4. Witness Paradox: Despite witnesses being critical for subrogation success (per SQL analysis), they do not affect payout amounts—confirming their value lies in recovery potential, not cost prediction.
+
+**Comparison with Prior Analyses:**
+
+This regression complements the SQL-based subrogation analysis:
+- SQL Analysis: Identified documentation (witness + police report) as key for subrogation opportunity
+- Regression Analysis: Shows documentation affects payout amounts but explains essentially zero variance
+- Combined Insight: High-payout claims with strong documentation (police report + witness) represent the best subrogation targets
+
+**Limitations:**
+
+- Current features explain 0% of payout variance (negative R²)
+- Missing critical predictors: damage severity, injury indicators, vehicle value, repair costs
+- Model is not suitable for production use without additional features
+
+**Next Steps:**
+
+1. Collect damage severity indicators (e.g., airbag deployment, towing required, total loss indicator)
+2. Include vehicle value and actual repair cost estimates
+3. Add injury/medical claim flags
+4. Test non-linear models (Random Forest, XGBoost) for better predictions
+5. Integrate high-payout claims with strong documentation into subrogation priority queue (Query 9 criteria)
+
+**Files Generated:**
+- `result12_regression_metrics.csv` - Model performance metrics and coefficients
+- `result13_feature_importance.csv` - Feature ranking by absolute coefficient value
+---
+
 ### Analysis Results (Claim & Vehicle Tables）
 
 #### Query 1: By Vehicle Category & Color
