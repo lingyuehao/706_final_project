@@ -183,6 +183,46 @@ GROUP BY 1
 ORDER BY avg_payout DESC
 """
 
+query7 = """
+SELECT
+  c.accident_key,
+  COUNT(*) AS num_claims,
+  AVG(c.claim_est_payout) AS avg_payout
+FROM claim c
+GROUP BY c.accident_key
+ORDER BY num_claims DESC;
+"""
+
+query8 = """
+SELECT
+  c.accident_key,
+  c.witness_present_ind,
+  c.policy_report_filed_ind,
+  COUNT(*) AS num_claims,
+  AVG(c.claim_est_payout) AS avg_payout
+FROM claim c
+GROUP BY 1, 2, 3
+ORDER BY num_claims DESC;
+"""
+
+query9 = """
+SELECT
+  c.claim_number,
+  c.accident_key,
+  c.policy_report_filed_ind,
+  c.witness_present_ind,
+  p.past_num_of_claims,
+  c.claim_est_payout
+FROM claim c
+JOIN policyholder p
+  ON c.policyholder_key = p.policyholder_key
+WHERE c.policy_report_filed_ind = 1
+  AND c.witness_present_ind = 'Y'
+  AND c.liab_prct BETWEEN 20 AND 80
+ORDER BY c.claim_est_payout DESC;
+"""
+
+
 # -------------------------------------------------------------------
 # Run all analyses
 # -------------------------------------------------------------------
@@ -193,6 +233,9 @@ queries = {
     "4. education_vs_living_status": query4,
     "5. past_claim_behavior": query5,
     "6. channel_effect": query6,
+    "7. accident_type_analysis": query7,
+    "8. accident_witness_police_analysis": query8,
+    "9. High-Priority_subrogation_candidates": query9,
 }
 
 
@@ -300,7 +343,43 @@ if r6.height > 0:
         f"({int(top_num['num_claims'])} claims)."
     )
 
-print("\n✅ All six analyses completed")
+#---- Query 7 ----
+r7 = run("7. accident_type_analysis", queries["7. accident_type_analysis"])
+if r7.height > 0:
+    top_num = r7.sort("num_claims", descending=True).row(0, named=True)
+    print(
+        f"-----------Query 7------------", "\n"
+        f"Insight: Most common accident_key = {top_num['accident_key']} "
+        f"with {int(top_num['num_claims'])} claims (avg payout ${_fmt(top_num['avg_payout'])})."
+    )
+
+#---- Query 8 ----
+r8 = run("8. accident_witness_police_analysis", queries["8. accident_witness_police_analysis"])
+if r8.height > 0:
+    top_num = r8.sort("num_claims", descending=True).row(0, named=True)
+    print(
+        f"-----------Query 8------------", "\n"
+        f"Insight: Most common accident_key = {top_num['accident_key']} "
+        f"with witness_present_ind={top_num['witness_present_ind']} and "
+        f"policy_report_filed_ind={top_num['policy_report_filed_ind']} "
+        f"had {int(top_num['num_claims'])} claims (avg payout ${_fmt(top_num['avg_payout'])})."
+    )
+
+#---- Query 9 ----
+r9 = run("9. High-Priority_subrogation_candidates", queries["9. High-Priority_subrogation_candidates"])
+if r9.height > 0:
+    top_candidates = r9.sort("claim_est_payout", descending=True).head(5)
+    print(
+        f"-----------Query 9------------", "\n"
+        f"Insight: Top 5 high-priority subrogation candidates (policy_report_filed_ind=1, "
+        f"witness_present_ind='Y', liab_prct 20-80%):"
+    )
+    print(top_candidates)
+
+
+
+
+print("\n✅ All nine analyses completed")
 
 
 
