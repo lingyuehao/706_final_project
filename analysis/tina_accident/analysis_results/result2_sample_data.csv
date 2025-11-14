@@ -1,0 +1,11 @@
+accident_site,accident_type,accident_key
+Parking Area,multi_vehicle_clear,1
+Unknown,multi_vehicle_unclear,2
+Highway/Intersection,multi_vehicle_clear,3
+Unknown,single_car,4
+Local,single_car,5
+Highway/Intersection,single_car,6
+Parking Area,multi_vehicle_unclear,7
+Local,multi_vehicle_clear,8
+Parking Area,single_car,9
+Local,multi_vehicle_unclear,10

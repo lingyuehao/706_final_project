@@ -1,0 +1,13 @@
+accident_key,accident_site,accident_type,claim_count,witness_count,police_report_count,subrogation_priority
+4,Unknown,single_car,1378,0,857,Low
+9,Parking Area,single_car,1364,0,823,Low
+5,Local,single_car,1302,0,776,Low
+6,Highway/Intersection,single_car,1221,0,743,Low
+11,Highway/Intersection,multi_vehicle_unclear,1827,0,1096,Medium
+10,Local,multi_vehicle_unclear,1784,0,1095,Medium
+8,Local,multi_vehicle_clear,1659,0,1012,Medium
+3,Highway/Intersection,multi_vehicle_clear,1589,0,968,Medium
+7,Parking Area,multi_vehicle_unclear,1475,0,898,Medium
+2,Unknown,multi_vehicle_unclear,1469,0,881,Medium
+1,Parking Area,multi_vehicle_clear,1469,0,883,Medium
+12,Unknown,multi_vehicle_clear,1463,0,848,Medium

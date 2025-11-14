@@ -1,0 +1,21 @@
+accident_key,accident_site,accident_type,witness_present_ind,policy_report_filed_ind,in_network_bodyshop
+1,Parking Area,multi_vehicle_clear,Y,1,no
+1,Parking Area,multi_vehicle_clear,N,1,yes
+2,Unknown,multi_vehicle_unclear,N,1,yes
+2,Unknown,multi_vehicle_unclear,N,1,yes
+3,Highway/Intersection,multi_vehicle_clear,N,0,yes
+4,Unknown,single_car,N,1,no
+5,Local,single_car,N,0,no
+6,Highway/Intersection,single_car,N,0,yes
+2,Unknown,multi_vehicle_unclear,N,0,no
+7,Parking Area,multi_vehicle_unclear,N,1,yes
+8,Local,multi_vehicle_clear,Y,1,no
+4,Unknown,single_car,N,1,no
+8,Local,multi_vehicle_clear,N,0,yes
+9,Parking Area,single_car,Y,0,yes
+4,Unknown,single_car,N,1,yes
+1,Parking Area,multi_vehicle_clear,Y,0,no
+5,Local,single_car,N,1,yes
+5,Local,single_car,N,1,yes
+3,Highway/Intersection,multi_vehicle_clear,Y,1,yes
+7,Parking Area,multi_vehicle_unclear,Y,0,yes
