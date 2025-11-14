@@ -3,6 +3,7 @@ import os
 from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error, r2_score
+from sklearn.preprocessing import LabelEncoder
 import numpy as np
 
 # create output directory
@@ -149,10 +150,9 @@ result11.write_csv(
     "analysis/tina_accident/analysis_results/result11_comprehensive_subrogation.csv")
 
 # regression analysis
-# predict claim_est_payout
 regression_data = accident.join(claim, on="accident_key", how="inner")
 
-# create features
+# create binary features
 regression_df = regression_data.with_columns([
     pl.when(pl.col("accident_type").str.contains("multi_vehicle")).then(
         1).otherwise(0).alias("is_multi_vehicle"),
@@ -161,18 +161,44 @@ regression_df = regression_data.with_columns([
     pl.when(pl.col("policy_report_filed_ind") == 1).then(
         1).otherwise(0).alias("has_police_report"),
     pl.when(pl.col("in_network_bodyshop") == "Yes").then(
-        1).otherwise(0).alias("in_network")
+        1).otherwise(0).alias("in_network"),
+    pl.col("subrogation").alias("has_subrogation")
 ])
 
-# prepare features and target
-X = regression_df.select([
+# convert to pandas for easier encoding
+regression_pd = regression_df.to_pandas()
+
+# encode categorical variables
+le_site = LabelEncoder()
+le_type = LabelEncoder()
+le_channel = LabelEncoder()
+
+regression_pd["accident_site_encoded"] = le_site.fit_transform(
+    regression_pd["accident_site"])
+regression_pd["accident_type_encoded"] = le_type.fit_transform(
+    regression_pd["accident_type"])
+regression_pd["channel_encoded"] = le_channel.fit_transform(
+    regression_pd["channel"])
+
+# prepare features
+feature_columns = [
     "is_multi_vehicle",
     "has_witness",
     "has_police_report",
-    "in_network"
-]).to_numpy()
+    "in_network",
+    "has_subrogation",
+    "liab_prct",
+    "accident_site_encoded",
+    "accident_type_encoded",
+    "channel_encoded"
+]
 
-y = regression_df.select("claim_est_payout").to_numpy().flatten()
+# drop rows with missing values in features or target
+regression_pd_clean = regression_pd[feature_columns +
+                                    ["claim_est_payout"]].dropna()
+
+X = regression_pd_clean[feature_columns].values
+y = regression_pd_clean["claim_est_payout"].values
 
 # split data
 X_train, X_test, y_train, y_test = train_test_split(
@@ -189,10 +215,19 @@ y_pred = model.predict(X_test)
 mse = mean_squared_error(y_test, y_pred)
 r2 = r2_score(y_test, y_pred)
 
-# save regression results
+# save regression results with all coefficients
 regression_results = pl.DataFrame({
-    "metric": ["target_variable", "mse", "r2_score", "coef_multi_vehicle", "coef_witness", "coef_police_report", "coef_in_network", "intercept"],
-    "value": [str("claim_est_payout"), str(mse), str(r2), str(model.coef_[0]), str(model.coef_[1]), str(model.coef_[2]), str(model.coef_[3]), str(model.intercept_)]
+    "metric": ["target_variable", "mse", "r2_score", "num_samples"] + [f"coef_{feat}" for feat in feature_columns] + ["intercept"],
+    "value": [str("claim_est_payout"), str(mse), str(r2), str(len(regression_pd_clean))] + [str(coef) for coef in model.coef_] + [str(model.intercept_)]
 })
 regression_results.write_csv(
     "analysis/tina_accident/analysis_results/result12_regression_metrics.csv")
+
+# save feature importance
+feature_importance = pl.DataFrame({
+    "feature": feature_columns,
+    "coefficient": model.coef_,
+    "abs_coefficient": np.abs(model.coef_)
+}).sort("abs_coefficient", descending=True)
+feature_importance.write_csv(
+    "analysis/tina_accident/analysis_results/result13_feature_importance.csv")

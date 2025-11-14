@@ -1,4 +1,4 @@
 accident_type,total_claims,claims_with_witness,claims_with_police_report,claims_with_both,subrogation_potential_pct
 multi_vehicle_clear,6180,0,3711,0,0.0
-single_car,5265,0,3199,0,0.0
 multi_vehicle_unclear,6555,0,3970,0,0.0
+single_car,5265,0,3199,0,0.0
