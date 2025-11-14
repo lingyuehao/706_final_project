@@ -579,8 +579,24 @@ vehicle_price, claim_est_payout, liab_prct, witness_present, policy_report_filed
 ### Analysis Results of SQL analysis performed on the `accident` and `policyholder` datasets
 
 
-**Query 1: d**
-**Query 2: d**
+**Query 1: Avg Payout by Education Level**
+Joined Claim with Policyholder to compare average payout and claim volume between policyholders with vs. without higher education.
+<img width="342" height="159" alt="Screenshot 2025-11-14 at 10 40 47 AM" src="https://github.com/user-attachments/assets/e24d23ef-dcc3-4d24-91dc-153e7cd8b449" />
+- *Insights:*
+  - Higher-education group: 12,482 claims, average payout $3,609
+  - Non-education group: 5,518 claims, average payout $3,586
+  - Very similar payout levels across groups
+  - Education does not meaningfully influence payout severity
+
+**Query 2: Claims Distribution by Income**
+Grouped claims by annual income and calculated claim frequency and average payout.
+<img width="311" height="271" alt="Screenshot 2025-11-14 at 10 42 09 AM" src="https://github.com/user-attachments/assets/af616024-f757-4a94-ace0-4cd060e1b34a" />
+- *Insights:*
+  - A few income brackets dominate claim volume (e.g. 30k band with 3,818 claims).
+  - High-income bands file far fewer claims.
+  - Average payout varies widely due to low observation counts in many brackets.
+  - Income is not correlated with stronger subrogation documentation.
+
 **Query 3: d**
 **Query 4: d**
 **Query 5: d**
