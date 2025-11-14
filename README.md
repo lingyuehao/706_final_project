@@ -573,7 +573,21 @@ vehicle_price, claim_est_payout, liab_prct, witness_present, policy_report_filed
 - The model’s pseudo R² ≈ 0.10 suggests there are other unmodeled factors (perhaps policy type, damages, or party fault data).
 - Correlations of each variable with subrogation is stored in [this correlations table](analysis/bruce_driver/driver_subrogation_correlations.csv).
 
+### Queries Analysis on `Driver` and `Claim` tables
+#### Query 1: Gender breakdown
+![Average age of obtaining DL by gender](analysis/bruce_driver/avg_age_dl.png)
 
+This SQL query groups all drivers by gender and calculates three key statistics for each group: the total number of drivers, the average age at which they obtained their driver’s license, and the average safety rating. The results show that there are slightly more male drivers (7,800) than female drivers (7,390). Both genders obtained their driver’s licenses at roughly the same average age of 22.1 years. However, male drivers have a marginally higher average safety rating (74.26) compared to female drivers (73.91), suggesting that overall driving safety performance is very similar between genders, with only a small difference in favor of male drivers.
+
+#### Query 2: Driving experience categorization
+![Categorize age of obtaining DL by gender](analysis/bruce_driver/categorize_age_dl.png)
+
+This query breaks down the driver data further by both **gender** and **driver’s license age group** (`dl_age_group`), summarizing how safety ratings vary depending on when drivers obtained their licenses. It reports the **number of drivers** and their **average safety rating** for each combination of gender and age group (Early, Mid, and Young). The results show that most drivers obtained their licenses in the “Young” group, with over 5,000 drivers for each gender. Within each age group, male and female drivers have fairly similar safety ratings, though small differences appear: females have slightly higher ratings in the “Early” and “Mid” groups, whereas males have a marginally higher rating in the “Young” group. Across all categories, the differences in average safety rating are minimal (within about 0.5 points), suggesting that neither gender nor license-age group strongly influences safety performance, though those who got their licenses earlier tend to have slightly higher average safety ratings overall.
+
+#### Query 3: Safety ratings distribution and gender breakdown
+![Quartile statistics about safey ratings by gender](analysis/bruce_driver/safety_rating.png)
+
+This query groups drivers by **gender** and by **performance quartile** - specifically, whether their safety rating falls in the bottom quartile, middle 50%, or top quartile of all drivers. For each subgroup, it shows how many drivers belong to it, the **median safety rating** of that group (`median_group`), the **overall median** for that gender (`median_total_gender`), and how much the group’s median differs from the total median (`diff_from_total_med`). The results indicate a predictable gradient: drivers in the top quartile have substantially higher median ratings (around 92) compared to those in the bottom quartile (around 57). The middle 50% cluster near the overall gender medians (74–75). Both genders follow the same pattern, but male medians are slightly higher overall, as reflected in the one‑point difference in total median values. The `diff_from_total_med` column reinforces this trend—bottom‑quartile drivers score roughly 17–18 points below their gender’s median, while top‑quartile drivers exceed it by a similar margin—showing a balanced distribution of performance within each gender group.
 
 
 ### Analysis Results of SQL analysis performed on the `accident` and `policyholder` datasets
