@@ -584,11 +584,14 @@ vehicle_price, claim_est_payout, liab_prct, witness_present, policy_report_filed
 Joined Claim with Policyholder to compare average payout and claim volume between policyholders with vs. without higher education.
 
 <img width="342" height="159" alt="Screenshot 2025-11-14 at 10 40 47 AM" src="https://github.com/user-attachments/assets/e24d23ef-dcc3-4d24-91dc-153e7cd8b449" />
+
 - **Insights:**
   - Higher-education group: 12,482 claims, average payout $3,609
   - Non-education group: 5,518 claims, average payout $3,586
   - Very similar payout levels across groups
   - Education does not meaningfully influence payout severity
+
+
 
 **Query 2: Claims Distribution by Income**
 
@@ -602,6 +605,8 @@ Grouped claims by annual income and calculated claim frequency and average payou
   - Average payout varies widely due to low observation counts in many brackets.
   - Income is not correlated with stronger subrogation documentation.
 
+
+
 **Query 3: Past Claim History by Education**
 
 Calculated average number of past claims for each education segment.
@@ -613,6 +618,8 @@ Calculated average number of past claims for each education segment.
   - No meaningful behavioral difference.
   - Not useful for detecting recoverable vs. non-recoverable claims.
 
+
+
 **Query 4: Education × Living Status Segmentation**
 
 Computed average payout and claim counts across living status (rent vs own) stratified by education.
@@ -622,13 +629,199 @@ Computed average payout and claim counts across living status (rent vs own) stra
 - Insights:
 
   - Renters (both education levels) filed more claims.
-
   - Claim severity varies modestly between cells (~$3,530–$3,660).
-
   - Useful for demographic profiling but not for subrogation opportunity.
-**Query 5: d**
-**Query 6: d**
+ 
+  
+**Query 5: Past Claim Behavior (Prev Claims vs New Claims)**
+
+Grouped policyholders by their historical claim count and computed new claim frequency and average payout.
+
+<img width="430" height="272" alt="Screenshot 2025-11-14 at 10 47 50 AM" src="https://github.com/user-attachments/assets/8a909649-d429-4c84-89c8-8e8c80a82506" />
+
+- Insights:
+  - Large spike at 0 past claims → 9,875 new claims, meaning most policyholders are new claimants.
+  - High-frequency claimants (20+ past claims) exist but are extremely rare.
+  - Past claim count does not predict documentation quality (police report, witness, etc.)
+
+
+**Query 6: Channel Effect**
+
+Analyzed claims by reporting channel (Broker vs Online vs Phone).
+
+<img width="383" height="171" alt="Screenshot 2025-11-14 at 10 50 06 AM" src="https://github.com/user-attachments/assets/c72f902a-b342-416e-aaa1-1e7e57b70c42" />
+
+- Insights:
+  - Broker channel produced the most claims (9,573) and highest total payout.
+  - Average payouts across channels are nearly identical ($3,500–$3,625).
+  - Channel does not meaningfully predict subrogation potential.
+
+
+**Query 7: Accident Key Analysis**
+
+Grouped claims by accident_key and computed frequency and average payout.
+
+<img width="348" height="270" alt="Screenshot 2025-11-14 at 10 51 10 AM" src="https://github.com/user-attachments/assets/cfebf1b6-e785-4ab9-873a-4c7eb339d767" />
+
+- Insights:
+  - Accident Key 11, 10, 8, 3, and 7 dominate claim volume (all >1,400 claims).
+  - These could represent common accident categories (e.g., rear-end, sideswipe), but without accident metadata they remain numeric codes.
+  - Higher-frequency accident keys warrant focused subrogation attention if documentation is strong.
+
+**Query 8: Witness + Police Report Analysis**
+
+Evaluated documentation quality by accident_key:
+  - Witness present? (Y/N)
+  - Police report filed? (0/1)
+
+<img width="661" height="273" alt="Screenshot 2025-11-14 at 10 52 21 AM" src="https://github.com/user-attachments/assets/2a533f3e-7611-4926-97a9-bf5846e9e8c8" />
+
+- Insights:
+  - The most common scenario:
+   - Accident Key 11, witness N, police report 1, with 604 claims.
+  - Witness presence is very low overall.
+  - Police report rate is moderate, but lack of witnesses weakens recovery cases.
+  - Strong documentation combinations (Witness Y + Police Report 1) are rare.
+
+**Query 9: High-Priority Subrogation Candidates**
+
+Filtered for the highest-quality subrogation opportunities using:
+  - police_report_filed_ind = 1
+  - witness_present_ind = 'Y'
+  - liab_prct between 20–80 (avoids obvious 0/100% liability cases)
+
+<img width="686" height="288" alt="Screenshot 2025-11-14 at 10 54 21 AM" src="https://github.com/user-attachments/assets/f488fd13-0111-4422-a825-9f39d0c38121" />
+
+<img width="677" height="190" alt="Screenshot 2025-11-14 at 10 54 39 AM" src="https://github.com/user-attachments/assets/57a74d45-5126-4418-9c52-ff894a134361" />
+
+- Insights:
+  - 4,413 claims meet high-priority conditions.
+  - Top candidates show payout amounts around $21,504, indicating large recovery value.
+  - Many high-priority cases have 0 past claims, suggesting non-fraudulent, strong documentation scenarios.
+  - Accident_keys 2, 3, 4, 8, 9, and 10 appear repeatedly among high-priority cases.
+ 
+  
 
 #### Key Insights and Recommendations
+**1. Demographics do NOT predict subrogation opportunity.**
+Education, income, renter vs owner, and past claims show little relationship with documentation quality or payouts. These are not actionable for recovery.
+**2. Documentation quality is the most important driver.**
+Query 8 shows:
+- Witness presence is rare
+- Police reports are more common
+- The strongest subrogation cases need both, but this combination is extremely uncommon
+**3. Accident keys 11, 10, 8, 3, 7 are the highest-volume accident categories.**
+These categories should be prioritized if documentation exists.
+**4. Query 9 identified 4,413 high-quality subrogation candidates.**
+These claims have:
+- Witness present
+- Police report filed
+- Non-extreme liability percentages
+- These should be immediately routed to a recovery team.
+**5. Many strong cases cluster around higher payouts.**
+This increases the financial value of directing subrogation resources strategically.
 
-**Recommended actions for the company:**
+#### **Recommended actions for the company:**
+###### **1. Strengthen Documentation Collection at the Scene**
+**Recommendation:**
+Improve capture of witness information, photos, and incident details through enhanced intake processes (mobile app prompts, adjuster checklists, broker training).
+
+**Reason:**
+Across the dataset, witness presence is extremely rare, even though it is one of the strongest predictors of successful subrogation.
+Query 8 shows thousands of police-reported claims but almost no witnesses.
+This missing information significantly weakens TriGuard’s ability to establish fault and pursue recovery.
+
+Better documentation → stronger evidence → higher subrogation recovery rates.
+
+
+
+###### **2. Create a High-Priority Subrogation Queue (Using Query 9 Criteria)**
+**Recommendation:**
+Automatically flag claims that meet the following:
+- Police report filed
+- Witness present
+- Liability between 20–80%
+- High payout (e.g., >$7,500)
+
+**Reason:**
+Query 9 identified 4,413 claims that check these boxes—these are your best possible subrogation opportunities.
+These claims:
+- Have strong evidence
+- Have clear but not one-sided liability
+- Have high enough payouts to justify recovery effort
+A dedicated routing queue ensures these valuable cases are not overlooked.
+
+
+###### **3. Build an Accident-Key-Based Subrogation Model**
+**Recommendation:**
+Use the high-frequency accident categories (accident_keys 11, 10, 8, 3, 7) to predict which accident types historically yield the highest subrogation recoveries.
+**Reason:**
+Query 7 reveals that a small set of accident_keys accounts for over half of all claims.
+If these categories also correlate with frequent subrogation successes, they become the highest ROI areas for resource allocation.
+Focusing adjusters and legal resources on the right accident categories increases recovery efficiency.
+
+
+
+###### **4. Do NOT Use Demographic Segmentation in Subrogation**
+**Recommendation:**
+Avoid using income, education, living status, or past claim counts to decide subrogation priority.
+
+**Reason:**
+Queries 1–6 show that demographic variables:
+- Do NOT affect payout amounts
+- Do NOT predict documentation quality
+- Do NOT correlate with subrogation likelihood
+Using them could introduce bias without improving financial outcomes.
+Subrogation success depends on claim-level evidence, not who the policyholder is.
+This keeps TriGuard both effective and fair.
+
+
+
+###### **5. Implement a “Claim Documentation Score” (0–3 Scale)**
+**Recommendation:**
+Assign each new claim a score based on:
+- Police report filed → +1
+- Witness present → +1
+- Liability 20–80% → +1
+Claims scoring 2 or 3 should be automatically routed to subrogation.
+
+**Reason:**
+This simple scoring system directly reflects the conditions that Query 8 and Query 9 show are most predictive of subrogation success.
+It:
+- Removes guesswork
+- Standardizes the process
+- Reduces missed recovery opportunities
+- Supports automation and scalability
+
+
+
+###### **6. Broker & Agent Training on Evidence Collection**
+**Recommendation:**
+Provide targeted workflows, scripts, or digital forms to brokers and phone agents to help them collect key information during the first notice of loss (FNOL).
+
+**Reason:**
+Query 6 shows the Broker channel handles the majority of claims, meaning improvements here have the largest impact.
+If agents consistently ask for:
+- Witness contact
+- Photos
+- Third-party details
+- Police report confirmation
+TriGuard will collect more subrogation-critical evidence early—before it becomes impossible to retrieve later.
+
+Early capture → higher evidence quality → better recovery rate.
+
+
+###### **7. Prioritize High-Payout, Multi-Evidence Claims for Legal Review**
+**Recommendation:**
+Allocate more legal or recovery resources towards high-payout claims that have both witness + police report documentation.
+
+**Reason:**
+Query 9 shows that verified high-evidence claims often have payouts exceeding $20,000, making them especially worth pursuing.
+
+Legal expenses are fixed, but recovery potential scales with payout.
+Focusing on high-value recoverable cases maximizes ROI for the subrogation unit.
+
+
+
+
+
