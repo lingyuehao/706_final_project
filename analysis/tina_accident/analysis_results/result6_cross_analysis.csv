@@ -1,13 +1,13 @@
 accident_site,accident_type,accident_count
-Parking Area,multi_vehicle_unclear,1
-Highway/Intersection,single_car,1
-Parking Area,multi_vehicle_clear,1
-Unknown,single_car,1
-Unknown,multi_vehicle_clear,1
 Local,single_car,1
-Highway/Intersection,multi_vehicle_unclear,1
+Unknown,multi_vehicle_clear,1
+Highway/Intersection,single_car,1
+Parking Area,multi_vehicle_unclear,1
 Local,multi_vehicle_clear,1
 Local,multi_vehicle_unclear,1
-Unknown,multi_vehicle_unclear,1
-Parking Area,single_car,1
+Highway/Intersection,multi_vehicle_unclear,1
 Highway/Intersection,multi_vehicle_clear,1
+Parking Area,single_car,1
+Parking Area,multi_vehicle_clear,1
+Unknown,multi_vehicle_unclear,1
+Unknown,single_car,1

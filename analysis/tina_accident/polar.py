@@ -1,5 +1,9 @@
 import polars as pl
 import os
+from sklearn.linear_model import LinearRegression
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import mean_squared_error, r2_score
+import numpy as np
 
 # create output directory
 os.makedirs("analysis/tina_accident/analysis_results", exist_ok=True)
@@ -143,3 +147,52 @@ result11 = (accident.join(claim, on="accident_key", how="inner")
             ]).sort(["subrogation_priority", "claim_count"], descending=[False, True]))
 result11.write_csv(
     "analysis/tina_accident/analysis_results/result11_comprehensive_subrogation.csv")
+
+# regression analysis
+# predict claim_est_payout
+regression_data = accident.join(claim, on="accident_key", how="inner")
+
+# create features
+regression_df = regression_data.with_columns([
+    pl.when(pl.col("accident_type").str.contains("multi_vehicle")).then(
+        1).otherwise(0).alias("is_multi_vehicle"),
+    pl.when(pl.col("witness_present_ind") == "Yes").then(
+        1).otherwise(0).alias("has_witness"),
+    pl.when(pl.col("policy_report_filed_ind") == 1).then(
+        1).otherwise(0).alias("has_police_report"),
+    pl.when(pl.col("in_network_bodyshop") == "Yes").then(
+        1).otherwise(0).alias("in_network")
+])
+
+# prepare features and target
+X = regression_df.select([
+    "is_multi_vehicle",
+    "has_witness",
+    "has_police_report",
+    "in_network"
+]).to_numpy()
+
+y = regression_df.select("claim_est_payout").to_numpy().flatten()
+
+# split data
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42)
+
+# train model
+model = LinearRegression()
+model.fit(X_train, y_train)
+
+# predictions
+y_pred = model.predict(X_test)
+
+# metrics
+mse = mean_squared_error(y_test, y_pred)
+r2 = r2_score(y_test, y_pred)
+
+# save regression results
+regression_results = pl.DataFrame({
+    "metric": ["target_variable", "mse", "r2_score", "coef_multi_vehicle", "coef_witness", "coef_police_report", "coef_in_network", "intercept"],
+    "value": [str("claim_est_payout"), str(mse), str(r2), str(model.coef_[0]), str(model.coef_[1]), str(model.coef_[2]), str(model.coef_[3]), str(model.intercept_)]
+})
+regression_results.write_csv(
+    "analysis/tina_accident/analysis_results/result12_regression_metrics.csv")

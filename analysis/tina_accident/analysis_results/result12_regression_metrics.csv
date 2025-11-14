@@ -1,0 +1,9 @@
+metric,value
+target_variable,claim_est_payout
+mse,13173593.892272826
+r2_score,-0.00242850415713991
+coef_multi_vehicle,-110.27680740662923
+coef_witness,0.0
+coef_police_report,89.13137160552068
+coef_in_network,0.0
+intercept,3611.009291038964
