@@ -1,5 +1,6 @@
 from pathlib import Path
 import polars as pl
+import statsmodels.formula.api as smf  # Fit data for logistic regression
 
 # __file__ = analysis/bruce_driver/drivers_polar.py
 # So we need to go up twice: bruce_driver -> analysis -> project root
@@ -35,10 +36,9 @@ for col in num_cols:
 corr_df = pl.DataFrame(corrs, schema=["column", "corr_with_subrogation"])
 corr_df = corr_df.sort("corr_with_subrogation", descending=True)
 
-corr_df.write_csv(Path(__file__).resolve().parent / "driver_subrogation_correlations.csv")
-
-# Fit data for logistic regression
-import statsmodels.formula.api as smf
+corr_df.write_csv(
+    Path(__file__).resolve().parent / "driver_subrogation_correlations.csv"
+)
 
 # Formula with interactions included
 formula = "subrogation ~ liab_prct + accident_key + policy_report_filed_ind + safety_rating + liab_prct:safety_rating"

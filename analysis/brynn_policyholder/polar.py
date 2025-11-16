@@ -1,6 +1,6 @@
-
 import polars as pl
 from pathlib import Path
+
 
 # -------------------------------------------------------------------
 # Helper: cast numeric columns to Float64 and print NaN warnings
@@ -92,7 +92,7 @@ ctx = pl.SQLContext()
 ctx.register("claim", claim)
 ctx.register("policyholder", policyholder)
 
-OUT = ROOT / "analysis"/"brynn_policyholder" / "output"
+OUT = ROOT / "analysis" / "brynn_policyholder" / "output"
 OUT.mkdir(exist_ok=True)
 
 
@@ -108,7 +108,6 @@ LEFT JOIN policyholder p
 GROUP BY p.high_education_ind
 ORDER BY avg_payout DESC
 """
-
 
 
 query2 = """
@@ -239,7 +238,6 @@ queries = {
 }
 
 
-
 def _fmt(x):
     try:
         if x is None:
@@ -250,6 +248,7 @@ def _fmt(x):
     except Exception:
         return str(x)
 
+
 def run(name, sql):
     print(f"\n▶ Running: {name}")
     df = ctx.execute(sql).collect()
@@ -258,6 +257,7 @@ def run(name, sql):
     df.write_csv(out_path)
     print(f"Saved → {out_path}")
     return df
+
 
 # ---- Query 1 ----
 r1 = run("1. avg_payout_by_education", queries["1. avg_payout_by_education"])
@@ -269,11 +269,12 @@ if r1.height > 0:
         diff = hi["avg_payout"] - lo["avg_payout"]
         pct = diff / lo["avg_payout"] * 100 if lo["avg_payout"] != 0 else 0
         print(
-            f"-----------Query 1------------", "\n"
+            "-----------Query 1------------",
+            "\n"
             f"Insight: Higher-education policyholders file {int(hi['total_claims'])} claims "
             f"with avg payout ${_fmt(hi['avg_payout'])}, vs non-educated "
             f"{int(lo['total_claims'])} claims at ${_fmt(lo['avg_payout'])}. "
-            f"Difference: {_fmt(pct)}% higher payouts."
+            f"Difference: {_fmt(pct)}% higher payouts.",
         )
 
 # ---- Query 2 ----
@@ -282,11 +283,12 @@ if r2.height > 0:
     top_vol = r2.sort("num_claims", descending=True).row(0, named=True)
     top_avg = r2.sort("avg_payout", descending=True).row(0, named=True)
     print(
-        f"-----------Query 2------------", "\n"
+        "-----------Query 2------------",
+        "\n"
         f"Insight: Most frequent income level = {_fmt(top_vol['annual_income'])} "
         f"with {int(top_vol['num_claims'])} claims (avg payout ${_fmt(top_vol['avg_payout'])}). "
         f"Highest avg payout = {_fmt(top_avg['annual_income'])} "
-        f"with ${_fmt(top_avg['avg_payout'])}."
+        f"with ${_fmt(top_avg['avg_payout'])}.",
     )
 
 # ---- Query 3 ----
@@ -297,10 +299,11 @@ if r3.height > 0:
     lo = rows.get(0.0) or rows.get(0) or rows.get("0")
     if hi and lo:
         print(
-            f"-----------Query 3------------", "\n"
+            "-----------Query 3------------",
+            "\n"
             f"Insight: On average, higher-education policyholders had "
             f"{_fmt(hi['avg_past_claims'])} past claims vs non-educated "
-            f"{_fmt(lo['avg_past_claims'])}."
+            f"{_fmt(lo['avg_past_claims'])}.",
         )
 
 # ---- Query 4 ----
@@ -309,11 +312,12 @@ if r4.height > 0:
     top_avg = r4.sort("avg_payout", descending=True).row(0, named=True)
     top_vol = r4.sort("num_claims", descending=True).row(0, named=True)
     print(
-        f"-----------Query 4------------", "\n"
+        "-----------Query 4------------",
+        "\n"
         f"Insight: Highest avg payout group = {top_avg['education']}/{top_avg['living_status']} "
         f"(${_fmt(top_avg['avg_payout'])}, {int(top_avg['num_claims'])} claims). "
         f"Most frequent group = {top_vol['education']}/{top_vol['living_status']} "
-        f"with {int(top_vol['num_claims'])} claims."
+        f"with {int(top_vol['num_claims'])} claims.",
     )
 
 # ---- Query 5 ----
@@ -322,11 +326,12 @@ if r5.height > 0:
     low = r5.sort("prev_claims").row(0, named=True)
     high = r5.sort("prev_claims", descending=True).row(0, named=True)
     print(
-        f"-----------Query 5------------", "\n"
+        "-----------Query 5------------",
+        "\n"
         f"Insight: Policyholders with {int(low['prev_claims'])} prior claims "
         f"filed {int(low['new_claims'])} new ones (avg payout ${_fmt(low['avg_payout'])}). "
         f"Those with {int(high['prev_claims'])} prior claims filed "
-        f"{int(high['new_claims'])} new ones (avg payout ${_fmt(high['avg_payout'])})."
+        f"{int(high['new_claims'])} new ones (avg payout ${_fmt(high['avg_payout'])}).",
     )
 
 # ---- Query 6 ----
@@ -336,50 +341,55 @@ if r6.height > 0:
     top_total = r6.sort("total_payout", descending=True).row(0, named=True)
     top_num = r6.sort("num_claims", descending=True).row(0, named=True)
     print(
-        f"-----------Query 6------------", "\n"
+        "-----------Query 6------------",
+        "\n"
         f"Insight: Highest avg payout channel = {top_avg['channel']} "
         f"(${_fmt(top_avg['avg_payout'])}). Highest total payout = {top_total['channel']} "
         f"(${_fmt(top_total['total_payout'])}). Most active channel = {top_num['channel']} "
-        f"({int(top_num['num_claims'])} claims)."
+        f"({int(top_num['num_claims'])} claims).",
     )
 
-#---- Query 7 ----
+# ---- Query 7 ----
 r7 = run("7. accident_type_analysis", queries["7. accident_type_analysis"])
 if r7.height > 0:
     top_num = r7.sort("num_claims", descending=True).row(0, named=True)
     print(
-        f"-----------Query 7------------", "\n"
+        "-----------Query 7------------",
+        "\n"
         f"Insight: Most common accident_key = {top_num['accident_key']} "
-        f"with {int(top_num['num_claims'])} claims (avg payout ${_fmt(top_num['avg_payout'])})."
+        f"with {int(top_num['num_claims'])} claims (avg payout ${_fmt(top_num['avg_payout'])}).",
     )
 
-#---- Query 8 ----
-r8 = run("8. accident_witness_police_analysis", queries["8. accident_witness_police_analysis"])
+# ---- Query 8 ----
+r8 = run(
+    "8. accident_witness_police_analysis",
+    queries["8. accident_witness_police_analysis"],
+)
 if r8.height > 0:
     top_num = r8.sort("num_claims", descending=True).row(0, named=True)
     print(
-        f"-----------Query 8------------", "\n"
+        "-----------Query 8------------",
+        "\n"
         f"Insight: Most common accident_key = {top_num['accident_key']} "
         f"with witness_present_ind={top_num['witness_present_ind']} and "
         f"policy_report_filed_ind={top_num['policy_report_filed_ind']} "
-        f"had {int(top_num['num_claims'])} claims (avg payout ${_fmt(top_num['avg_payout'])})."
+        f"had {int(top_num['num_claims'])} claims (avg payout ${_fmt(top_num['avg_payout'])}).",
     )
 
-#---- Query 9 ----
-r9 = run("9. High-Priority_subrogation_candidates", queries["9. High-Priority_subrogation_candidates"])
+# ---- Query 9 ----
+r9 = run(
+    "9. High-Priority_subrogation_candidates",
+    queries["9. High-Priority_subrogation_candidates"],
+)
 if r9.height > 0:
     top_candidates = r9.sort("claim_est_payout", descending=True).head(5)
     print(
-        f"-----------Query 9------------", "\n"
-        f"Insight: Top 5 high-priority subrogation candidates (policy_report_filed_ind=1, "
-        f"witness_present_ind='Y', liab_prct 20-80%):"
+        "-----------Query 9------------",
+        "\n"
+        "Insight: Top 5 high-priority subrogation candidates (policy_report_filed_ind=1, "
+        "witness_present_ind='Y', liab_prct 20-80%):",
     )
     print(top_candidates)
 
 
-
-
 print("\n✅ All nine analyses completed")
-
-
-
