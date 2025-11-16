@@ -1,10 +1,11 @@
-import polars as pl
 import os
-from sklearn.linear_model import LinearRegression
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import mean_squared_error, r2_score
-from sklearn.preprocessing import LabelEncoder
+
 import numpy as np
+import polars as pl
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error, r2_score
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import LabelEncoder
 
 # create output directory
 os.makedirs("analysis/tina_accident/analysis_results", exist_ok=True)

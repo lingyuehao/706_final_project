@@ -2,12 +2,13 @@
 Pytest configuration and fixtures for the test suite
 """
 
-import pytest
+import tempfile
+from pathlib import Path
+
+import numpy as np
 import pandas as pd
 import polars as pl
-import numpy as np
-from pathlib import Path
-import tempfile
+import pytest
 
 
 @pytest.fixture

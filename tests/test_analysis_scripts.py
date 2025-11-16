@@ -32,8 +32,7 @@ class TestTinaAccidentAnalysis:
         )
 
         # Test multi-vehicle filter
-        multi_vehicle = df.filter(
-            pl.col("accident_type").str.contains("multi_vehicle"))
+        multi_vehicle = df.filter(pl.col("accident_type").str.contains("multi_vehicle"))
 
         assert multi_vehicle.height == 2
 
@@ -68,8 +67,7 @@ class TestBrynnPolicyholderAnalysis:
         df = pl.DataFrame({"value": ["100.5", "200.3", "invalid", "300.0"]})
 
         # Cast to float
-        df_cast = df.with_columns(
-            pl.col("value").cast(pl.Float64, strict=False))
+        df_cast = df.with_columns(pl.col("value").cast(pl.Float64, strict=False))
 
         # Should have nulls for invalid values
         assert df_cast["value"].null_count() > 0
@@ -137,8 +135,7 @@ class TestLingyueVehicleAnalysis:
         df = pl.DataFrame({"witness": ["Y", "N", "yes", "no", "1", "0"]})
 
         def to_bool(col: pl.Expr) -> pl.Expr:
-            s = col.cast(
-                pl.Utf8, strict=False).str.strip_chars().str.to_lowercase()
+            s = col.cast(pl.Utf8, strict=False).str.strip_chars().str.to_lowercase()
             return (
                 pl.when(s.is_in(["y", "yes", "true", "1"]))
                 .then(pl.lit(1))
@@ -147,8 +144,7 @@ class TestLingyueVehicleAnalysis:
                 .otherwise(None)
             )
 
-        result = df.with_columns(
-            [to_bool(pl.col("witness")).alias("witness_bool")])
+        result = df.with_columns([to_bool(pl.col("witness")).alias("witness_bool")])
 
         assert result["witness_bool"][0] == 1  # 'Y'
         assert result["witness_bool"][1] == 0  # 'N'
@@ -190,10 +186,8 @@ class TestLingyueVehicleAnalysis:
 
         corr = df.select(
             [
-                pl.corr("subrogation", "vehicle_price").alias(
-                    "corr_subro_price"),
-                pl.corr("subrogation", "liab_prct").alias(
-                    "corr_subro_liability"),
+                pl.corr("subrogation", "vehicle_price").alias("corr_subro_price"),
+                pl.corr("subrogation", "liab_prct").alias("corr_subro_liability"),
             ]
         )
 

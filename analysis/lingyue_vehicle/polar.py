@@ -1,6 +1,7 @@
+import os
+
 import polars as pl
 import statsmodels.api as sm
-import os
 
 # Paths
 DATA_DIR = "data/tri_guard_5_py_clean"

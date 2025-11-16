@@ -99,8 +99,7 @@ class TestDataMerging:
     ):
         """Test merging all tables"""
         merged = (
-            sample_claim_data.merge(
-                sample_accident_data, on="accident_key", how="left")
+            sample_claim_data.merge(sample_accident_data, on="accident_key", how="left")
             .merge(sample_policyholder_data, on="policyholder_key", how="left")
             .merge(sample_vehicle_data, on="vehicle_key", how="left")
             .merge(sample_driver_data, on="driver_key", how="left")
@@ -131,12 +130,10 @@ class TestDataTypes:
         sample_claim_data["claim_date"] = pd.to_datetime(
             sample_claim_data["claim_date"]
         )
-        assert pd.api.types.is_datetime64_any_dtype(
-            sample_claim_data["claim_date"])
+        assert pd.api.types.is_datetime64_any_dtype(sample_claim_data["claim_date"])
 
     def test_categorical_columns(self, sample_claim_data):
         """Test categorical columns have valid values"""
         if "witness_present_ind" in sample_claim_data.columns:
             valid_values = {"Y", "N", "Yes", "No", "y", "n"}
-            assert sample_claim_data["witness_present_ind"].isin(
-                valid_values).all()
+            assert sample_claim_data["witness_present_ind"].isin(valid_values).all()

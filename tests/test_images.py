@@ -2,10 +2,11 @@
 Tests for photo/image file validation
 """
 
-import pytest
-from PIL import Image
 import os
 from pathlib import Path
+
+import pytest
+from PIL import Image
 
 
 class TestImageFiles:
@@ -100,8 +101,7 @@ class TestAnalysisImages:
 
     def test_lingyue_vehicle_images(self):
         """Test images in lingyue_vehicle analysis"""
-        base_path = Path(__file__).parent.parent / \
-            "analysis" / "lingyue_vehicle"
+        base_path = Path(__file__).parent.parent / "analysis" / "lingyue_vehicle"
 
         if base_path.exists():
             png_files = list(base_path.glob("*.png"))
@@ -191,8 +191,7 @@ class TestDataImageFiles:
 
     def test_erd_diagram_exists(self):
         """Test that ERD diagram exists and is valid"""
-        erd_path = Path(__file__).parent.parent / \
-            "data" / "TriGuard_ERD_pretty.png"
+        erd_path = Path(__file__).parent.parent / "data" / "TriGuard_ERD_pretty.png"
 
         if erd_path.exists():
             with Image.open(erd_path) as img:

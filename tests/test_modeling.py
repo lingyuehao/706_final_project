@@ -2,14 +2,13 @@
 Tests for the modeling.py script
 """
 
-from scripts.modeling import (
-    create_enhanced_features_v2,
-    target_encode,
-    SELECTED_FEATURES,
-)
-import pandas as pd
 import sys
 from pathlib import Path
+
+import pandas as pd
+
+from scripts.modeling import (SELECTED_FEATURES, create_enhanced_features_v2,
+                              target_encode)
 
 # Add scripts directory to path
 sys.path.insert(0, str(Path(__file__).parent.parent / "scripts"))
@@ -29,8 +28,7 @@ class TestFeatureEngineering:
         """Test basic feature engineering functionality"""
         # Merge all data
         df = (
-            sample_claim_data.merge(
-                sample_accident_data, on="accident_key", how="left")
+            sample_claim_data.merge(sample_accident_data, on="accident_key", how="left")
             .merge(sample_policyholder_data, on="policyholder_key", how="left")
             .merge(sample_vehicle_data, on="vehicle_key", how="left")
             .merge(sample_driver_data, on="driver_key", how="left")
@@ -61,8 +59,7 @@ class TestFeatureEngineering:
         """Test feature engineering in inference mode"""
         # Merge all data
         df = (
-            sample_claim_data.merge(
-                sample_accident_data, on="accident_key", how="left")
+            sample_claim_data.merge(sample_accident_data, on="accident_key", how="left")
             .merge(sample_policyholder_data, on="policyholder_key", how="left")
             .merge(sample_vehicle_data, on="vehicle_key", how="left")
             .merge(sample_driver_data, on="driver_key", how="left")
@@ -72,8 +69,7 @@ class TestFeatureEngineering:
         _, artifacts = create_enhanced_features_v2(df.copy())
 
         # Second pass: inference
-        result_inference = create_enhanced_features_v2(
-            df.copy(), artifacts=artifacts)
+        result_inference = create_enhanced_features_v2(df.copy(), artifacts=artifacts)
 
         assert isinstance(result_inference, pd.DataFrame)
         assert len(result_inference) == len(df)
@@ -89,8 +85,7 @@ class TestFeatureEngineering:
         """Test time-based feature creation"""
         # Merge all required data
         df = (
-            sample_claim_data.merge(
-                sample_accident_data, on="accident_key", how="left")
+            sample_claim_data.merge(sample_accident_data, on="accident_key", how="left")
             .merge(sample_policyholder_data, on="policyholder_key", how="left")
             .merge(sample_vehicle_data, on="vehicle_key", how="left")
             .merge(sample_driver_data, on="driver_key", how="left")
@@ -119,8 +114,7 @@ class TestFeatureEngineering:
         """Test liability-based feature engineering"""
         # Merge all required data
         df = (
-            sample_claim_data.merge(
-                sample_accident_data, on="accident_key", how="left")
+            sample_claim_data.merge(sample_accident_data, on="accident_key", how="left")
             .merge(sample_policyholder_data, on="policyholder_key", how="left")
             .merge(sample_vehicle_data, on="vehicle_key", how="left")
             .merge(sample_driver_data, on="driver_key", how="left")
@@ -151,8 +145,7 @@ class TestFeatureEngineering:
         """Test interaction feature creation"""
         # Merge all required data
         df = (
-            sample_claim_data.merge(
-                sample_accident_data, on="accident_key", how="left")
+            sample_claim_data.merge(sample_accident_data, on="accident_key", how="left")
             .merge(sample_policyholder_data, on="policyholder_key", how="left")
             .merge(sample_vehicle_data, on="vehicle_key", how="left")
             .merge(sample_driver_data, on="driver_key", how="left")
@@ -338,8 +331,7 @@ class TestSelectedFeatures:
         """Test that selected features are present in engineered data"""
         # Merge all data
         df = (
-            sample_claim_data.merge(
-                sample_accident_data, on="accident_key", how="left")
+            sample_claim_data.merge(sample_accident_data, on="accident_key", how="left")
             .merge(sample_policyholder_data, on="policyholder_key", how="left")
             .merge(sample_vehicle_data, on="vehicle_key", how="left")
             .merge(sample_driver_data, on="driver_key", how="left")
@@ -348,8 +340,7 @@ class TestSelectedFeatures:
         result, _ = create_enhanced_features_v2(df)
 
         # Check that most selected features are present
-        available_features = [
-            f for f in SELECTED_FEATURES if f in result.columns]
+        available_features = [f for f in SELECTED_FEATURES if f in result.columns]
 
         # At least 90% of selected features should be present
         coverage = len(available_features) / len(SELECTED_FEATURES)
@@ -370,8 +361,7 @@ class TestDataValidation:
         """Ensure no data leakage from training to test"""
         # Merge all data
         df = (
-            sample_claim_data.merge(
-                sample_accident_data, on="accident_key", how="left")
+            sample_claim_data.merge(sample_accident_data, on="accident_key", how="left")
             .merge(sample_policyholder_data, on="policyholder_key", how="left")
             .merge(sample_vehicle_data, on="vehicle_key", how="left")
             .merge(sample_driver_data, on="driver_key", how="left")
@@ -404,8 +394,7 @@ class TestDataValidation:
         """Test that features are consistent across runs"""
         # Merge all data
         df = (
-            sample_claim_data.merge(
-                sample_accident_data, on="accident_key", how="left")
+            sample_claim_data.merge(sample_accident_data, on="accident_key", how="left")
             .merge(sample_policyholder_data, on="policyholder_key", how="left")
             .merge(sample_vehicle_data, on="vehicle_key", how="left")
             .merge(sample_driver_data, on="driver_key", how="left")

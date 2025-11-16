@@ -1,5 +1,6 @@
-import pandas as pd
 from pathlib import Path
+
+import pandas as pd
 
 IN_PATH = "Training_TriGuard.csv"
 OUT_DIR = Path("tri_guard_5_py_clean")

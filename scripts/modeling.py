@@ -7,17 +7,18 @@ an F1-weighted ensemble of LightGBM, XGBoost, and CatBoost models to predict
 subrogation.
 """
 
-import pandas as pd
-import numpy as np
-from sklearn.model_selection import StratifiedKFold
-from sklearn.metrics import f1_score, roc_auc_score
-from sklearn.preprocessing import LabelEncoder
+import os
+
 import lightgbm as lgb
+import numpy as np
+import optuna
+import pandas as pd
 import xgboost as xgb
 from catboost import CatBoostClassifier
 from imblearn.over_sampling import SMOTE
-import optuna
-import os
+from sklearn.metrics import f1_score, roc_auc_score
+from sklearn.model_selection import StratifiedKFold
+from sklearn.preprocessing import LabelEncoder
 from sqlalchemy import create_engine, text
 
 # Load Data
