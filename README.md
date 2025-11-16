@@ -2,7 +2,6 @@
 
 ![CI Pipeline](https://github.com/lingyuehao/706_final_project/actions/workflows/ci.yml/badge.svg?branch=main)
 ![Code Quality](https://github.com/lingyuehao/706_final_project/actions/workflows/code-quality.yml/badge.svg?branch=main)
-[![codecov](https://codecov.io/gh/lingyuehao/706_final_project/branch/main/graph/badge.svg)](https://codecov.io/gh/lingyuehao/706_final_project)
 
 ## Goals
 
