@@ -1,4 +1,7 @@
 # AutoRisk Subro
+![CI Pipeline](https://github.com/lingyuehao/706_final_project/workflows/CI%20Pipeline/badge.svg)
+![Code Quality](https://github.com/lingyuehao/706_final_project/workflows/Code%20Quality%20Checks/badge.svg)
+[![codecov](https://github.com/lingyuehao/706_final_project/branch/main/graph/badge.svg)](https://codecov.io/gh/lingyuehao/706_final_project)
 
 ## Goals
 

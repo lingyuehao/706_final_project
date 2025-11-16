@@ -1,0 +1,52 @@
+name: Scheduled Tests
+
+on:
+  schedule:
+    # Run tests every day at 2 AM UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+
+jobs:
+  comprehensive-test:
+    name: Comprehensive Test Suite
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        cache: 'pip'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    
+    - name: Run all tests including slow tests
+      run: |
+        pytest tests/ -v --tb=long --cov=scripts --cov=analysis --cov-report=html --cov-report=term
+      continue-on-error: true
+    
+    - name: Generate test report
+      run: |
+        pytest tests/ --html=report.html --self-contained-html
+      continue-on-error: true
+    
+    - name: Upload test report
+      uses: actions/upload-artifact@v3
+      with:
+        name: nightly-test-report
+        path: |
+          report.html
+          htmlcov/
+        retention-days: 30
+    
+    - name: Notify on failure
+      if: failure()
+      run: |
+        echo "Nightly tests failed! Please check the logs."
+

@@ -1,0 +1,253 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: [ main, master, develop ]
+  pull_request:
+    branches: [ main, master, develop ]
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: Test Suite
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.9', '3.10', '3.11']
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+        cache: 'pip'
+    
+    - name: Install system dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y postgresql-client
+    
+    - name: Install Python dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    
+    - name: Run linting
+      run: |
+        pip install flake8 black isort
+        # Stop the build if there are Python syntax errors or undefined names
+        flake8 scripts analysis --count --select=E9,F63,F7,F82 --show-source --statistics
+        # Exit-zero treats all errors as warnings
+        flake8 scripts analysis --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+    
+    - name: Run unit tests
+      run: |
+        pytest tests/ -v --tb=short -m "not slow and not database"
+      
+    - name: Run integration tests
+      run: |
+        pytest tests/ -v --tb=short -m "integration and not database"
+      continue-on-error: true
+    
+    - name: Generate coverage report
+      run: |
+        pytest tests/ --cov=scripts --cov=analysis --cov-report=xml --cov-report=html -m "not database"
+      continue-on-error: true
+    
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./coverage.xml
+        flags: unittests
+        name: codecov-umbrella
+        fail_ci_if_error: false
+    
+    - name: Archive coverage report
+      uses: actions/upload-artifact@v3
+      with:
+        name: coverage-report-${{ matrix.python-version }}
+        path: htmlcov/
+        retention-days: 30
+
+  lint:
+    name: Code Quality
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        cache: 'pip'
+    
+    - name: Install linting tools
+      run: |
+        python -m pip install --upgrade pip
+        pip install flake8 black isort mypy pylint
+    
+    - name: Run Black
+      run: |
+        black --check scripts/ analysis/ tests/
+      continue-on-error: true
+    
+    - name: Run isort
+      run: |
+        isort --check-only scripts/ analysis/ tests/
+      continue-on-error: true
+    
+    - name: Run Flake8
+      run: |
+        flake8 scripts/ analysis/ tests/ --max-line-length=127 --extend-ignore=E203,W503
+      continue-on-error: true
+    
+    - name: Run Pylint
+      run: |
+        pip install -r requirements.txt
+        pylint scripts/ --disable=all --enable=E,F --exit-zero
+      continue-on-error: true
+
+  security:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Install security tools
+      run: |
+        python -m pip install --upgrade pip
+        pip install bandit safety
+    
+    - name: Run Bandit security scan
+      run: |
+        bandit -r scripts/ analysis/ -ll
+      continue-on-error: true
+    
+    - name: Check for known vulnerabilities
+      run: |
+        pip install -r requirements.txt
+        safety check --json
+      continue-on-error: true
+
+  test-analysis-scripts:
+    name: Test Analysis Scripts
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        cache: 'pip'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    
+    - name: Test analysis scripts syntax
+      run: |
+        python -m py_compile analysis/tina_accident/polar.py
+        python -m py_compile analysis/brynn_policyholder/polar.py
+        python -m py_compile analysis/lingyue_vehicle/polar.py
+        python -m py_compile analysis/bruce_driver/drivers_polar.py
+    
+    - name: Run analysis script tests
+      run: |
+        pytest tests/test_analysis_scripts.py -v
+      continue-on-error: true
+
+  test-modeling:
+    name: Test Modeling Pipeline
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        cache: 'pip'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    
+    - name: Test modeling script syntax
+      run: |
+        python -m py_compile scripts/modeling.py
+    
+    - name: Run modeling tests
+      run: |
+        pytest tests/test_modeling.py -v -m "not slow"
+      continue-on-error: true
+    
+    - name: Run system integration tests
+      run: |
+        pytest tests/test_system_pipeline.py -v
+      continue-on-error: true
+
+  test-images:
+    name: Test Image Files
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        cache: 'pip'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    
+    - name: Run image validation tests
+      run: |
+        pytest tests/test_images.py -v -m images
+      continue-on-error: true
+    
+    - name: Check image files exist
+      run: |
+        find analysis -name "*.png" -o -name "*.jpg" | head -20
+
+  build-summary:
+    name: Build Summary
+    runs-on: ubuntu-latest
+    needs: [test, lint, security, test-analysis-scripts, test-modeling, test-images]
+    if: always()
+    
+    steps:
+    - name: Check build status
+      run: |
+        echo "Build Summary:"
+        echo "=============="
+        echo "Tests: ${{ needs.test.result }}"
+        echo "Linting: ${{ needs.lint.result }}"
+        echo "Security: ${{ needs.security.result }}"
+        echo "Analysis Scripts: ${{ needs.test-analysis-scripts.result }}"
+        echo "Modeling: ${{ needs.test-modeling.result }}"
+        echo "Images: ${{ needs.test-images.result }}"
+

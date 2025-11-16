@@ -1,0 +1,95 @@
+name: Code Quality Checks
+
+on:
+  pull_request:
+    branches: [ main, master, develop ]
+  workflow_dispatch:
+
+jobs:
+  format-check:
+    name: Code Formatting
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Install formatters
+      run: |
+        pip install black isort autopep8
+    
+    - name: Check Black formatting
+      run: |
+        black --check --diff scripts/ analysis/ tests/
+    
+    - name: Check import sorting
+      run: |
+        isort --check-only --diff scripts/ analysis/ tests/
+    
+    - name: Auto-format suggestions
+      if: failure()
+      run: |
+        echo "Code formatting issues detected."
+        echo "Run the following commands to fix:"
+        echo "  black scripts/ analysis/ tests/"
+        echo "  isort scripts/ analysis/ tests/"
+
+  complexity-check:
+    name: Code Complexity
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Install complexity tools
+      run: |
+        pip install radon mccabe
+    
+    - name: Check cyclomatic complexity
+      run: |
+        radon cc scripts/ analysis/ -a -nb
+      continue-on-error: true
+    
+    - name: Check maintainability index
+      run: |
+        radon mi scripts/ analysis/ -nb
+      continue-on-error: true
+
+  documentation-check:
+    name: Documentation
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Install doc tools
+      run: |
+        pip install pydocstyle interrogate
+    
+    - name: Check docstring coverage
+      run: |
+        interrogate -v scripts/ analysis/
+      continue-on-error: true
+    
+    - name: Check docstring style
+      run: |
+        pydocstyle scripts/ analysis/ --count
+      continue-on-error: true
+
