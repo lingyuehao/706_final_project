@@ -25,7 +25,8 @@ class TestEndToEndPipeline:
         """Test complete feature engineering pipeline"""
         # Merge all tables
         df = (
-            sample_claim_data.merge(sample_accident_data, on="accident_key", how="left")
+            sample_claim_data.merge(
+                sample_accident_data, on="accident_key", how="left")
             .merge(sample_policyholder_data, on="policyholder_key", how="left")
             .merge(sample_vehicle_data, on="vehicle_key", how="left")
             .merge(sample_driver_data, on="driver_key", how="left")
@@ -57,7 +58,8 @@ class TestEndToEndPipeline:
     ):
         """Test that selected features are available after engineering"""
         df = (
-            sample_claim_data.merge(sample_accident_data, on="accident_key", how="left")
+            sample_claim_data.merge(
+                sample_accident_data, on="accident_key", how="left")
             .merge(sample_policyholder_data, on="policyholder_key", how="left")
             .merge(sample_vehicle_data, on="vehicle_key", how="left")
             .merge(sample_driver_data, on="driver_key", how="left")
@@ -82,7 +84,8 @@ class TestEndToEndPipeline:
     ):
         """Test data quality after full pipeline"""
         df = (
-            sample_claim_data.merge(sample_accident_data, on="accident_key", how="left")
+            sample_claim_data.merge(
+                sample_accident_data, on="accident_key", how="left")
             .merge(sample_policyholder_data, on="policyholder_key", how="left")
             .merge(sample_vehicle_data, on="vehicle_key", how="left")
             .merge(sample_driver_data, on="driver_key", how="left")
@@ -101,7 +104,8 @@ class TestEndToEndPipeline:
 
         for feat in critical_features:
             if feat in result.columns:
-                assert not result[feat].isna().any(), f"{feat} contains NaN values"
+                assert not result[feat].isna().any(
+                ), f"{feat} contains NaN values"
 
     def test_feature_dtypes(
         self,
@@ -113,7 +117,8 @@ class TestEndToEndPipeline:
     ):
         """Test feature data types are appropriate"""
         df = (
-            sample_claim_data.merge(sample_accident_data, on="accident_key", how="left")
+            sample_claim_data.merge(
+                sample_accident_data, on="accident_key", how="left")
             .merge(sample_policyholder_data, on="policyholder_key", how="left")
             .merge(sample_vehicle_data, on="vehicle_key", how="left")
             .merge(sample_driver_data, on="driver_key", how="left")
@@ -152,7 +157,8 @@ class TestDataConsistency:
     ):
         """Test that row counts are preserved through pipeline"""
         df = (
-            sample_claim_data.merge(sample_accident_data, on="accident_key", how="left")
+            sample_claim_data.merge(
+                sample_accident_data, on="accident_key", how="left")
             .merge(sample_policyholder_data, on="policyholder_key", how="left")
             .merge(sample_vehicle_data, on="vehicle_key", how="left")
             .merge(sample_driver_data, on="driver_key", how="left")
@@ -173,7 +179,8 @@ class TestDataConsistency:
     ):
         """Test that pipeline produces deterministic output"""
         df = (
-            sample_claim_data.merge(sample_accident_data, on="accident_key", how="left")
+            sample_claim_data.merge(
+                sample_accident_data, on="accident_key", how="left")
             .merge(sample_policyholder_data, on="policyholder_key", how="left")
             .merge(sample_vehicle_data, on="vehicle_key", how="left")
             .merge(sample_driver_data, on="driver_key", how="left")
@@ -195,7 +202,8 @@ class TestDataConsistency:
     ):
         """Test that feature values are in expected ranges"""
         df = (
-            sample_claim_data.merge(sample_accident_data, on="accident_key", how="left")
+            sample_claim_data.merge(
+                sample_accident_data, on="accident_key", how="left")
             .merge(sample_policyholder_data, on="policyholder_key", how="left")
             .merge(sample_vehicle_data, on="vehicle_key", how="left")
             .merge(sample_driver_data, on="driver_key", how="left")
@@ -227,7 +235,8 @@ class TestModelingPreparation:
     ):
         """Test that engineered features contain no infinity values"""
         df = (
-            sample_claim_data.merge(sample_accident_data, on="accident_key", how="left")
+            sample_claim_data.merge(
+                sample_accident_data, on="accident_key", how="left")
             .merge(sample_policyholder_data, on="policyholder_key", how="left")
             .merge(sample_vehicle_data, on="vehicle_key", how="left")
             .merge(sample_driver_data, on="driver_key", how="left")
@@ -239,7 +248,8 @@ class TestModelingPreparation:
         numeric_cols = result.select_dtypes(include=[np.number]).columns
 
         for col in numeric_cols:
-            assert not np.isinf(result[col]).any(), f"{col} contains infinity values"
+            assert not np.isinf(result[col]).any(
+            ), f"{col} contains infinity values"
 
     def test_feature_names_no_special_chars(
         self,
@@ -251,7 +261,8 @@ class TestModelingPreparation:
     ):
         """Test that feature names don't contain problematic characters"""
         df = (
-            sample_claim_data.merge(sample_accident_data, on="accident_key", how="left")
+            sample_claim_data.merge(
+                sample_accident_data, on="accident_key", how="left")
             .merge(sample_policyholder_data, on="policyholder_key", how="left")
             .merge(sample_vehicle_data, on="vehicle_key", how="left")
             .merge(sample_driver_data, on="driver_key", how="left")
