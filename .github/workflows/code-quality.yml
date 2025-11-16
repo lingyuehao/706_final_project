@@ -31,7 +31,7 @@ jobs:
     
     - name: Check import sorting
       run: |
-        isort --check-only --diff scripts/ analysis/ tests/
+        isort --check-only --profile black --diff scripts/ analysis/ tests/
     
     - name: Auto-format suggestions
       if: failure()
@@ -39,7 +39,7 @@ jobs:
         echo "Code formatting issues detected."
         echo "Run the following commands to fix:"
         echo "  black scripts/ analysis/ tests/"
-        echo "  isort scripts/ analysis/ tests/"
+        echo "  isort --profile black scripts/ analysis/ tests/"
 
   complexity-check:
     name: Code Complexity
