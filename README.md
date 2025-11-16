@@ -296,15 +296,7 @@ display(df_check)
 
 - Notebook cannot connect: Confirm the container has the env vars (echo $PGHOST) and that psql works from the VS Code terminal.
 
-### Next Steps
-
-1. Connect to the database using the snippets in Notebook or Dbeaver.
-
-2. tbc
-
----
-## Analysis Results
----
+## Part4: Analysis Results
 
 ### Analysis Results of SQL analysis performed on the `accident` and `claim` datasets
 
@@ -910,7 +902,90 @@ Query 9 shows that verified high-evidence claims often have payouts exceeding $2
 Legal expenses are fixed, but recovery potential scales with payout.
 Focusing on high-value recoverable cases maximizes ROI for the subrogation unit.
 
+## Part5: Machine Learning Pipeline
 
+This part implements a complete machine learning pipeline to predict the likelihood of insurance subrogation. The model ingests data directly from a PostgreSQL database, performs advanced feature engineering, and trains an F1-score-weighted ensemble of GBDT models (LightGBM, XGBoost, and CatBoost).
 
+Initial exploration and prototyping were conducted in Jupyter Notebooks (`.ipynb`). These notebooks have been exported to `.html` for easy reference and review. The final, production-ready pipeline is consolidated in `modeling.py` for automated execution.
 
+### 🚀 Core Methodology
 
+The model's strategy is built upon several key components to maximize the F1 score:
+
+1.  **Direct Database Ingestion:** Connects to a PostgreSQL database using environment variables. It loads and joins five distinct tables: `claim`, `accident`, `policyholder`, `vehicle`, and `driver`.
+
+2.  **Time-Based Validation:** A realistic validation strategy is used. The model trains on all available data **except** for September 2016. September 2016 is held out as the final, unseen test set, simulating a real-world "predict next month" scenario.
+
+3.  **Advanced Feature Engineering:** The `create_enhanced_features_v2` function generates over 150 features, including:
+    * **Time-Based:** Claim date/time decomposition (e.g., `is_rush_hour`, `is_weekend`).
+    * **Driver & Vehicle:** Calculated features like `age_at_claim` and `period_of_driving`.
+    * **Liability:** Extensive engineering on `liab_prct`, creating polynomial, inverse, and binned variations.
+    * **Interactions:** High-order features combining liability, evidence, and accident type (e.g., `golden_combo`).
+    * **Leakage-Proof:** Uses an `artifacts` dictionary to pass training-set statistics (medians, quantiles) to the test set, preventing data leakage.
+
+4.  **Imbalanced Data Handling:** Employs **SMOTE** (Synthetic Minority Over-sampling TEchnique) within each cross-validation fold to create a more balanced training set without contaminating the validation fold.
+
+5.  **Hyperparameter Optimization (HPO):** Uses **Optuna** to run a dedicated HPO study for the CatBoost model, finding the best parameters specifically for its architecture.
+
+6.  **F1-Weighted Ensemble:** The final prediction is not a simple average. It is a weighted average of three models, where the weights are based on each model's individual Out-of-Fold (OOF) F1 score.
+
+    $Weight_{model} = \frac{F1_{model}}{F1_{LGBM} + F1_{XGB} + F1_{CAT}}$
+
+### 🛠️ How to Run
+
+#### 1. Prerequisites
+
+* Python 3.8+
+* Access to the PostgreSQL database.
+* Required Python packages (see `requirements.txt`).
+
+#### 2. Dependencies
+
+Install the required libraries. It is highly recommended to use a virtual environment.
+
+```
+pip install -r requirements.txt
+```
+
+#### 3. Environment Variables
+This script **requires** environment variables to connect to the database. Set them in your shell session before running the script.
+
+```
+# Example for Linux/macOS
+export PGHOST="your-database-host.com"
+export PGPORT="5432"
+export PGDATABASE="your_database_name"
+export PGUSER="your_username"
+export PGPASSWORD="your_password"
+
+# Optional: set to "allow" or "prefer" if SSL is not required
+export PGSSLMODE="require"
+```
+
+#### 4. Execute the Pipeline
+Once your environment variables are set and dependencies are installed, simply run the Python script:
+
+```
+python modeling.py
+```
+
+### 📊 Pipeline Output
+The script will execute the full pipeline:
+
+1. Connect to the database and load/merge tables.
+
+2. Split data into Train (all) and Test (Sept 2016).
+
+3. Run the Optuna HPO study for CatBoost (20 trials by default).
+
+4. Run the 5-fold cross-validation to train the F1-weighted ensemble.
+
+5. Print a final report to the console, including:
+
+    - Individual model OOF F1 scores.
+
+    - Calculated model weights.
+
+    - The final Weighted Ensemble OOF F1 score and AUC.
+
+6. Save the test set predictions to `submission.csv`, containing `claim_number` and `subrogation_proba`.
