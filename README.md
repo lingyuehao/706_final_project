@@ -909,7 +909,7 @@ Focusing on high-value recoverable cases maximizes ROI for the subrogation unit.
 
 ### Tableau Dashboard
 
-[![Dashboard Preview](analysis/tableau_dashboard/dashboard1.png)](https://public.tableau.com/views/1_17633564534400/dashboard1?:language=zh-CN&publish=yes&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link)
+[![Dashboard Preview](analysis/tableau/dashboard1.png)](https://public.tableau.com/views/1_17633564534400/dashboard1?:language=zh-CN&publish=yes&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link)
 
 
 
