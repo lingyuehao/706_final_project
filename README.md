@@ -787,47 +787,50 @@ Filtered for the highest-quality subrogation opportunities using:
   
 
 #### Key Insights and Recommendations
-**1. Demographics do NOT predict subrogation opportunity.**
+- 1. Demographics do NOT predict subrogation opportunity.
+  
 Education, income, renter vs owner, and past claims show little relationship with documentation quality or payouts. These are not actionable for recovery.
-**2. Documentation quality is the most important driver.**
+
+- 2. Documentation quality is the most important driver.**
 Query 8 shows:
 - Witness presence is rare
 - Police reports are more common
 - The strongest subrogation cases need both, but this combination is extremely uncommon
-**3. Accident keys 11, 10, 8, 3, 7 are the highest-volume accident categories.**
+  
+- 3. Accident keys 11, 10, 8, 3, 7 are the highest-volume accident categories.
+     
 These categories should be prioritized if documentation exists.
-**4. Query 9 identified 4,413 high-quality subrogation candidates.**
+
+- 4. Query 9 identified 4,413 high-quality subrogation candidates.
+
 These claims have:
 - Witness present
 - Police report filed
 - Non-extreme liability percentages
 - These should be immediately routed to a recovery team.
-**5. Many strong cases cluster around higher payouts.**
+
+- 5. Many strong cases cluster around higher payouts.
+     
 This increases the financial value of directing subrogation resources strategically.
 
-#### **Recommended actions for the company:**
-###### **1. Strengthen Documentation Collection at the Scene**
-**Recommendation:**
-Improve capture of witness information, photos, and incident details through enhanced intake processes (mobile app prompts, adjuster checklists, broker training).
+##### Recommended actions for the company:
 
-**Reason:**
-Across the dataset, witness presence is extremely rare, even though it is one of the strongest predictors of successful subrogation.
-Query 8 shows thousands of police-reported claims but almost no witnesses.
+- 1. Strengthen Documentation Collection at the Scene
+
+Improve capture of witness information, photos, and incident details through enhanced intake processes (mobile app prompts, adjuster checklists, broker training).Across the dataset, witness presence is extremely rare, even though it is one of the strongest predictors of successful subrogation. Query 8 shows thousands of police-reported claims but almost no witnesses.
 This missing information significantly weakens TriGuard’s ability to establish fault and pursue recovery.
 
 Better documentation → stronger evidence → higher subrogation recovery rates.
 
 
+- 2. Create a High-Priority Subrogation Queue (Using Query 9 Criteria)**
 
-###### **2. Create a High-Priority Subrogation Queue (Using Query 9 Criteria)**
-**Recommendation:**
 Automatically flag claims that meet the following:
 - Police report filed
 - Witness present
 - Liability between 20–80%
 - High payout (e.g., >$7,500)
 
-**Reason:**
 Query 9 identified 4,413 claims that check these boxes—these are your best possible subrogation opportunities.
 These claims:
 - Have strong evidence
@@ -836,41 +839,42 @@ These claims:
 A dedicated routing queue ensures these valuable cases are not overlooked.
 
 
-###### **3. Build an Accident-Key-Based Subrogation Model**
-**Recommendation:**
+- 3. Build an Accident-Key-Based Subrogation Model
+
 Use the high-frequency accident categories (accident_keys 11, 10, 8, 3, 7) to predict which accident types historically yield the highest subrogation recoveries.
-**Reason:**
+
 Query 7 reveals that a small set of accident_keys accounts for over half of all claims.
 If these categories also correlate with frequent subrogation successes, they become the highest ROI areas for resource allocation.
 Focusing adjusters and legal resources on the right accident categories increases recovery efficiency.
 
 
 
-###### **4. Do NOT Use Demographic Segmentation in Subrogation**
-**Recommendation:**
+- 4. Do NOT Use Demographic Segmentation in Subrogation
+  
 Avoid using income, education, living status, or past claim counts to decide subrogation priority.
 
-**Reason:**
 Queries 1–6 show that demographic variables:
 - Do NOT affect payout amounts
 - Do NOT predict documentation quality
 - Do NOT correlate with subrogation likelihood
+  
 Using them could introduce bias without improving financial outcomes.
 Subrogation success depends on claim-level evidence, not who the policyholder is.
 This keeps TriGuard both effective and fair.
 
 
 
-###### **5. Implement a “Claim Documentation Score” (0–3 Scale)**
-**Recommendation:**
+- 5. Implement a “Claim Documentation Score” (0–3 Scale).
+     
 Assign each new claim a score based on:
 - Police report filed → +1
 - Witness present → +1
 - Liability 20–80% → +1
+  
 Claims scoring 2 or 3 should be automatically routed to subrogation.
 
-**Reason:**
 This simple scoring system directly reflects the conditions that Query 8 and Query 9 show are most predictive of subrogation success.
+
 It:
 - Removes guesswork
 - Standardizes the process
@@ -878,12 +882,10 @@ It:
 - Supports automation and scalability
 
 
+- 6. Broker & Agent Training on Evidence Collection**
 
-###### **6. Broker & Agent Training on Evidence Collection**
-**Recommendation:**
 Provide targeted workflows, scripts, or digital forms to brokers and phone agents to help them collect key information during the first notice of loss (FNOL).
 
-**Reason:**
 Query 6 shows the Broker channel handles the majority of claims, meaning improvements here have the largest impact.
 If agents consistently ask for:
 - Witness contact
@@ -895,17 +897,18 @@ TriGuard will collect more subrogation-critical evidence early—before it becom
 Early capture → higher evidence quality → better recovery rate.
 
 
-###### **7. Prioritize High-Payout, Multi-Evidence Claims for Legal Review**
-**Recommendation:**
+- 7. Prioritize High-Payout, Multi-Evidence Claims for Legal Review**
+
 Allocate more legal or recovery resources towards high-payout claims that have both witness + police report documentation.
 
-**Reason:**
 Query 9 shows that verified high-evidence claims often have payouts exceeding $20,000, making them especially worth pursuing.
 
 Legal expenses are fixed, but recovery potential scales with payout.
 Focusing on high-value recoverable cases maximizes ROI for the subrogation unit.
 
-## Part5: Machine Learning Pipeline
+
+
+## Part 5: Machine Learning Pipeline
 
 This part implements a complete machine learning pipeline to predict the likelihood of insurance subrogation. The model ingests data directly from a PostgreSQL database, performs advanced feature engineering, and trains an F1-score-weighted ensemble of GBDT models (LightGBM, XGBoost, and CatBoost).
 
