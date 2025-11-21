@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Subrogation Assistant | Triage Tool</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="app.js" defer></script>
+</head>
+<body data-page="triage">
+  <header class="site-header">
+    <div class="container header-inner">
+      <div class="logo">Subrogation Assistant</div>
+      <nav class="nav">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="triage.html" class="nav-link active">Triage Tool</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container main">
+    <section class="page-title-row">
+      <div>
+        <h1>Triage a subrogation opportunity</h1>
+        <p class="page-subtitle">
+          Adjust sliders and inputs. The tool will instantly assign a risk band,
+          expected recovery, ROI, and action recommendation.
+        </p>
+      </div>
+      <div class="chip-row">
+        <button class="chip" data-scenario="high">High-value, high-probability</button>
+        <button class="chip" data-scenario="borderline">Borderline case</button>
+        <button class="chip" data-scenario="low">Low-probability, low-value</button>
+      </div>
+    </section>
+
+    <section class="layout-2">
+      <div class="card">
+        <h2>Claim inputs</h2>
+
+        <div class="form-row">
+          <label for="claimId">Claim ID (optional)</label>
+          <input id="claimId" type="text" placeholder="CLM-2025-00123">
+        </div>
+
+        <div class="form-row">
+          <label>Subrogation success probability</label>
+          <div class="prob-row">
+            <input id="probSlider" type="range" min="0" max="100" step="1" value="70">
+            <input id="probInput" type="number" min="0" max="1" step="0.01" value="0.70">
+            <span class="prob-label" id="probLabel">70%</span>
+          </div>
+          <p class="helper">
+            Use the slider or numeric input. The model output should be between 0 and 1.
+          </p>
+        </div>
+
+        <div class="form-row">
+          <label for="amount">Claim paid amount (currency)</label>
+          <input id="amount" type="number" min="0" step="1" value="50000">
+        </div>
+
+        <div class="form-row">
+          <label for="cost">Estimated pursuit cost</label>
+          <input id="cost" type="number" min="0" step="1" value="8000">
+        </div>
+
+        <div class="form-row">
+          <label for="liability">Liability clarity</label>
+          <select id="liability">
+            <option value="clear">Clear – counterparty mainly at fault</option>
+            <option value="medium">Mixed – some dispute</option>
+            <option value="unclear">Unclear / heavily disputed</option>
+          </select>
+        </div>
+
+        <div class="form-row">
+          <label for="timing">Limitation urgency</label>
+          <select id="timing">
+            <option value="urgent">Urgent – close to limitation</option>
+            <option value="normal" selected>Standard</option>
+            <option value="loose">Comfortable</option>
+          </select>
+        </div>
+
+        <button id="calcBtn" class="btn primary full">Recalculate triage</button>
+      </div>
+
+      <div class="card result-card" id="resultCard">
+        <div class="result-header">
+          <span class="result-label">Risk band</span>
+          <span id="riskPill" class="pill pill-B">Band B · Focus</span>
+        </div>
+        <p class="result-summary" id="bandSummary">
+          Good success likelihood. Recommended to pursue with strong follow-up.
+        </p>
+
+        <div class="result-grid">
+          <div class="result-item">
+            <span class="result-item-label">Expected recovery</span>
+            <span class="result-item-value" id="expectedRecovery">35,000</span>
+          </div>
+          <div class="result-item">
+            <span class="result-item-label">Estimated cost</span>
+            <span class="result-item-value" id="estimatedCost">8,000</span>
+          </div>
+          <div class="result-item">
+            <span class="result-item-label">ROI</span>
+            <span class="result-item-value" id="roiValue">4.4×</span>
+          </div>
+          <div class="result-item">
+            <span class="result-item-label">Overall priority</span>
+            <span class="priority-tag priority-mid" id="priorityTag">Medium</span>
+          </div>
+        </div>
+
+        <div class="result-section">
+          <h3>Recommended action</h3>
+          <p id="actionAdvice">
+            Open subrogation file, initiate recovery with strong negotiation and prepare
+            litigation strategy if cooperation stalls.
+          </p>
+        </div>
+
+        <div class="result-section">
+          <h3>Why this tier?</h3>
+          <ul class="reason-list" id="reasonList">
+            <li>Model probability is in the 0.60–0.80 focus band.</li>
+            <li>Expected recovery clearly exceeds estimated pursuit cost.</li>
+            <li>Liability is reasonably clear and limitation is not yet critical.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <span>© 2025 Subrogation Assistant</span>
+    </div>
+  </footer>
+</body>
+</html>

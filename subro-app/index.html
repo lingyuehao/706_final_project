@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Subrogation Assistant | Home</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="app.js" defer></script>
+</head>
+<body data-page="home">
+  <header class="site-header">
+    <div class="container header-inner">
+      <div class="logo">Subrogation Assistant</div>
+      <nav class="nav">
+        <a href="index.html" class="nav-link active">Home</a>
+        <a href="triage.html" class="nav-link">Triage Tool</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container main">
+    <section class="hero">
+      <div class="hero-text">
+        <h1>Prioritize subrogation cases in seconds.</h1>
+        <p>
+          This web app helps front-line adjusters quickly assess subrogation potential
+          based on model probability, claim amount, and expected cost, then translates
+          that into clear A–E risk tiers and action recommendations.
+        </p>
+        <div class="hero-actions">
+          <a href="triage.html" class="btn primary">Open Triage Tool</a>
+          <button class="btn ghost" id="demoScenarioBtn">Try a demo scenario</button>
+        </div>
+      </div>
+      <div class="hero-panel">
+        <div class="hero-metric">
+          <span class="metric-label">Typical Recovery Uplift</span>
+          <span class="metric-value">+18%</span>
+          <span class="metric-note">When adjusters follow tiered guidance.</span>
+        </div>
+        <div class="hero-metric">
+          <span class="metric-label">Average Triage Time</span>
+          <span class="metric-value">＜ 30s</span>
+          <span class="metric-note">Per claim with the tool.</span>
+        </div>
+        <div class="hero-metric">
+          <span class="metric-label">Tier Structure</span>
+          <span class="metric-pill pill pill-B">A–E Risk Bands</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="grid-3">
+      <article class="info-card">
+        <h2>Model-driven risk tiers</h2>
+        <p>
+          Convert raw model probabilities into intuitive A–E bands so adjusters can
+          immediately see where to invest effort.
+        </p>
+      </article>
+      <article class="info-card">
+        <h2>Money and ROI in one view</h2>
+        <p>
+          Combine expected recovery with estimated pursuit cost to highlight
+          high-value, high-return cases.
+        </p>
+      </article>
+      <article class="info-card">
+        <h2>Clear action guidance</h2>
+        <p>
+          Each tier comes with a recommended playbook—from “fast-track litigation”
+          to “light-touch handling only”.
+        </p>
+      </article>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <span>© 2025 Subrogation Assistant</span>
+    </div>
+  </footer>
+</body>
+</html>
