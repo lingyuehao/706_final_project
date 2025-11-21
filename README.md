@@ -1003,3 +1003,9 @@ The script will execute the full pipeline:
     - The final Weighted Ensemble OOF F1 score and AUC.
 
 6. Save the test set predictions to `submission.csv`, containing `claim_number` and `subrogation_proba`.
+
+
+## Part 6: Web App 1.0
+
+Link: resonant-crisp-a13807.netlify.app
+
