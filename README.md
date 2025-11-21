@@ -907,10 +907,13 @@ Legal expenses are fixed, but recovery potential scales with payout.
 Focusing on high-value recoverable cases maximizes ROI for the subrogation unit.
 
 
-### Tableau Dashboard
+### Tableau Dashboard:
+
+#### View interactive dashboards by clicking the pictures below to navigate to Tableau Public.
 
 [![Dashboard Preview](analysis/tableau/dashboard1.png)](https://public.tableau.com/views/1_17633564534400/dashboard1?:language=zh-CN&publish=yes&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link)
 
+[![Dashboard Preview](analysis/tableau/dashboard2.png)](https://public.tableau.com/views/1_17633564534400/dashboard2?:language=zh-CN&publish=yes&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link)
 
 
 ## Part 5: Machine Learning Pipeline
