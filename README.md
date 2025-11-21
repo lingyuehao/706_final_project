@@ -1007,5 +1007,10 @@ The script will execute the full pipeline:
 
 ## Part 6: Web App 1.0
 
-Link: resonant-crisp-a13807.netlify.app
 
+Link: [resonant-crisp-a13807.netlify.app](https://resonant-crisp-a13807.netlify.app)
+
+
+![Home Page](https://raw.githubusercontent.com/lingyuehao/706_final_project/main/subro-app/screenshots/home.png)
+
+![Triage Tool](https://raw.githubusercontent.com/lingyuehao/706_final_project/main/subro-app/screenshots/tool.png)
