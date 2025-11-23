@@ -7,11 +7,8 @@ from pathlib import Path
 
 import pandas as pd
 
-from scripts.modeling import (
-    SELECTED_FEATURES,
-    create_enhanced_features_v2,
-    target_encode,
-)
+from scripts.modeling import (SELECTED_FEATURES, create_enhanced_features_v2,
+                              target_encode)
 
 # Add scripts directory to path
 sys.path.insert(0, str(Path(__file__).parent.parent / "scripts"))
