@@ -1,0 +1,20 @@
+
+    =============================================
+    TriGuard ML Pipeline Execution Report
+    =============================================
+    
+    Model Performance:
+    - Training F1 Score: 0.6198
+    - Training AUC: 0.8638
+    - Test F1 Score: 0.5757575757575758
+    - Test AUC: 0.8343929879644165
+    - Best Threshold: 0.320
+    - Features Used: 27
+    
+    Files Generated:
+    - /opt/airflow/artifacts/model.pkl
+    - /opt/airflow/artifacts/test_predictions.csv
+    - /opt/airflow/artifacts/metrics.json
+    
+    =============================================
+    
