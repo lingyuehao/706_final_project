@@ -2095,3 +2095,11 @@ PGSSLMODE=require
 **Pipeline Status:** ✅ Production Ready  
 **Last Updated:** November 23, 2025  
 **Version:** 1.0
+
+
+## Group members Acknowledgement
+**Lingyue Hao**
+**Mingjie Wei**
+**Tina Yuan**
+**Bruce Chen**
+**Brynn Zhang**
