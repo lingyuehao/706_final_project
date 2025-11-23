@@ -1789,6 +1789,8 @@ This section documents the **production-ready machine learning pipeline** orches
 
 ### What is the DAG?
 
+![airflow](data/airflow.png)
+
 The **TriGuard ML Training Pipeline** (`triguard_ml_training_pipeline`) is a self-contained Airflow DAG that:
 - Loads insurance claim data from CSV files
 - Engineers 300+ predictive features
