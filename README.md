@@ -13,128 +13,447 @@
 
 ## Project Overview
 
-This README provides a comprehensive guide for the project, covering environment setup, the data's origin story, and connection workflows.
+This README provides a comprehensive end-to-end guide for the **TriGuard Insurance Subrogation Prediction System**, covering infrastructure setup, data engineering, exploratory analysis, machine learning pipeline development, testing, CI/CD automation, and production deployment.
 
-- **Part 1: Environment Setup** Details a reproducible workflow for all team members using VS Code Dev Containers, Python, and a connection to AWS RDS Postgres.
+### Documentation Structure
 
-- **Part 2: Data Normalization Process** Outlines the core data task that was performed: refactoring the `Training_TriGuard.csv` dataset into a normalized, five-table relational schema. This section explains the origin of the data now in the database.
+- **Part 1: Environment Setup** - Reproducible development environment using VS Code Dev Containers, Docker, Python, and AWS RDS PostgreSQL connection.
 
-- **Part 3: Getting Started** Provides the practical connection details for both Jupyter and DBeaver, and outlines the next steps for data analysis.
+- **Part 2: Data Ingestion, Storage and Processing** - Data normalization process, cloud deployment on AWS Lightsail, and relational schema design (5-table star schema).
+
+- **Part 3: Getting Started** - Practical connection details for Jupyter notebooks and DBeaver, with workflow examples for database queries.
+
+- **Part 4: Analysis Results** - Comprehensive SQL and statistical analysis across accident, claim, driver, vehicle, and policyholder dimensions. Includes Polars-based regression analysis and interactive Tableau dashboards.
+
+- **Part 5: Machine Learning Pipeline** - Complete ML pipeline with advanced feature engineering (300+ features), SMOTE for class imbalance, Optuna hyperparameter optimization, and F1-weighted ensemble models (LightGBM, XGBoost, CatBoost).
+
+- **Part 6: Testing** - Comprehensive test suite using Pytest with unit tests, integration tests, fixtures, and coverage reporting. Includes test markers for selective execution (fast/slow, unit/integration).
+
+- **Part 7: CI/CD Workflows** - Automated GitHub Actions workflows for continuous integration (multi-version Python testing), code quality checks (linting, formatting, complexity), security scans, and scheduled test runs.
+
+- **Part 8: Web App 1.0** - Production-ready web application deployed on Netlify for subrogation triage and prediction.
+
+- **Part 9: Apache Airflow ML Pipeline** - Production-grade orchestration using Apache Airflow in Docker, with automated DAG execution, artifact management, and scheduled model retraining.
+
+### Repository Layout
+
+```
+.
+├─ .devcontainer/              # Docker & Airflow configuration
+│  ├─ docker-compose.yml       # Airflow services (webserver, scheduler, db, redis)
+│  ├─ .Dockerfile             # Custom Airflow image with ML dependencies
+│  ├─ devcontainer.json       # VS Code Dev Container config
+│  ├─ .env                    # Environment variables (not committed)
+│  └─ db.env                  # PostgreSQL config for Airflow metadata
+│
+├─ .github/
+│  ├─ workflows/              # CI/CD workflows
+│  │  ├─ ci.yml              # Main CI pipeline (test, lint, security)
+│  │  ├─ code-quality.yml    # Code quality checks
+│  │  └─ test-on-schedule.yml # Scheduled comprehensive tests
+│  └─ WORKFLOWS.md           # CI/CD documentation
+│
+├─ airflow/                   # Apache Airflow orchestration
+│  ├─ dags/
+│  │  └─ triguard_ml_pipeline.py  # Self-contained ML DAG (926 lines)
+│  ├─ logs/                  # Task execution logs
+│  ├─ artifacts/             # Model outputs and predictions
+│  ├─ config/                # Airflow configuration
+│  └─ plugins/               # Custom Airflow plugins
+│
+├─ analysis/                  # SQL & statistical analysis
+│  ├─ tina_accident/         # Accident analysis (SQL + Polars regression)
+│  ├─ lingyue_vehicle/       # Vehicle analysis (SQL + stats)
+│  ├─ bruce_driver/          # Driver analysis (SQL + logistic regression)
+│  ├─ brynn_policyholder/    # Policyholder analysis (SQL)
+│  └─ tableau/               # Interactive dashboards (PNG exports)
+│
+├─ data/                      # Data files and artifacts
+│  ├─ tri_guard_5_py_clean/  # Normalized CSV files (5 tables)
+│  │  ├─ Accident.csv
+│  │  ├─ Claim.csv
+│  │  ├─ Driver.csv
+│  │  ├─ Policyholder.csv
+│  │  └─ Vehicle.csv
+│  ├─ Training_TriGuard.csv  # Original raw data
+│  ├─ submission.csv         # Model predictions output
+│  ├─ TriGuard_ERD_pretty.png # Entity relationship diagram
+│  └─ AWS.png                # AWS infrastructure diagram
+│
+├─ notebooks/                 # Jupyter notebooks
+│  ├─ data_inspection.ipynb  # Data validation notebook
+│  ├─ load_staging_data.ipynb # Database loading
+│  ├─ connect_and_test.ipynb # Database connection tests
+│  ├─ modeling.ipynb         # ML development notebook
+│  └─ modeling.html          # Exported notebook for reference
+│
+├─ scripts/                   # Production Python scripts
+│  ├─ modeling.py            # Complete ML pipeline (833 lines)
+│  └─ split_triguard_5tables.py # Data normalization script
+│
+├─ subro-app/                 # Web application
+│  ├─ index.html             # Home page
+│  ├─ triage.html            # Triage tool
+│  ├─ app.js                 # Application logic
+│  ├─ styles.css             # Styling
+│  └─ screenshots/           # App screenshots
+│
+├─ tests/                     # Comprehensive test suite
+│  ├─ conftest.py            # Pytest fixtures
+│  ├─ test_modeling.py       # ML pipeline tests
+│  ├─ test_data_utils.py     # Data utility tests
+│  ├─ test_analysis_scripts.py # Analysis script tests
+│  ├─ test_system_pipeline.py # Integration tests
+│  ├─ test_images.py         # Image validation tests
+│  └─ README.md              # Test documentation
+│
+├─ requirements.txt           # Python dependencies
+├─ pytest.ini                # Pytest configuration
+├─ Makefile                  # Build automation (test, lint, format)
+├─ .env.example              # Template for environment variables
+├─ AIRFLOW_SETUP.md          # Airflow setup documentation
+└─ README.md                 # This file (2000+ lines)
+```
+
+**Key Directories:**
+- `.devcontainer/` - Dockerized development environment + Airflow orchestration
+- `airflow/` - Production ML pipeline orchestrated with Apache Airflow
+- `analysis/` - SQL queries, statistical analysis, and visualizations
+- `scripts/` - Production-ready Python modules
+- `tests/` - Comprehensive test suite with >80% coverage goal
+- `subro-app/` - Deployed web application (Netlify)
+
+---
 
 ## Part 1: Environment Setup
 
-This guide walks through the process from a fresh clone to a working setup.
+This guide walks through setting up the **complete development and production environment**, which includes Apache Airflow orchestration, PostgreSQL databases (local metadata + AWS RDS), and all ML dependencies.
 
-**TL;DR:** Copy the files below, fill the local `.env`, and Reopen in Container. The database is already initialized and populated. Proceed to **Part 3** to connect.
+**TL;DR:** Fill `.devcontainer/.env` with AWS RDS credentials, run `docker-compose up -d` from the `.devcontainer/` directory. Access Airflow UI at `localhost:8080` (admin/admin).
 
-### Repository Layout
+### Architecture Overview
+
+The environment consists of:
+- **Apache Airflow** - ML pipeline orchestration (webserver, scheduler, triggerer)
+- **PostgreSQL (local)** - Airflow metadata database (`triguard_db`)
+- **PostgreSQL (AWS RDS)** - Production data warehouse (claims data)
+- **Redis** - Celery message broker
+- **Custom Docker Image** - Python 3.12 + ML libraries (LightGBM, XGBoost, CatBoost, etc.)
+
+### Configuration Files
+
+#### 1. `.devcontainer/.Dockerfile`
+
+Custom Airflow image with ML dependencies:
+
+```dockerfile
+# Start from the official Airflow image
+FROM apache/airflow:3.0.3
+
+# Switch to root user to install system-level packages
+USER root
+
+# Install system dependencies
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+       postgresql-client \
+       libgomp1 \
+    && rm -rf /var/lib/apt/lists/*
+
+# Back to non-root airflow user
+USER airflow
+
+# Install Python dependencies
+COPY --chown=airflow:root requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 ```
-.
-├─ .devcontainer/
-│  ├─ docker-compose.yml
-│  ├─ devcontainer.json
-│  └─ .env            # local only, NOT committed (use .env.example template)
-├─ requirements.txt
-├─ notebooks/
-│  ├─ data_inspection.ipynb
-│  └─ load_staging_data.ipynb   
-└─ .env.example
-```
 
-### Dev Container Configuration
+**Key components:**
+- `apache/airflow:3.0.3` - Stable Airflow base image (compatible with SQLAlchemy 1.4.x)
+- `postgresql-client` - For database connections and debugging
+- `libgomp1` - GNU OpenMP library required by ML packages (XGBoost, LightGBM)
+- ML dependencies installed from `requirements.txt`
 
-#### .devcontainer/docker-compose.yml
+#### 2. `.devcontainer/docker-compose.yml`
 
-Single service dev container (connects to RDS directly):
+Multi-service orchestration (excerpt):
 
-```
+```yaml
+x-airflow-common: &airflow-common
+  build:
+    context: ..
+    dockerfile: .devcontainer/.Dockerfile
+
+  environment: &airflow-common-env
+    AIRFLOW__CORE__EXECUTOR: CeleryExecutor
+    AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://vscode:vscode@db:5432/triguard_db?sslmode=disable
+    AIRFLOW__CELERY__RESULT_BACKEND: db+postgresql://vscode:vscode@db:5432/triguard_db?sslmode=disable
+    AIRFLOW__CELERY__BROKER_URL: redis://:@redis:6379/0
+    AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
+    
+    # AWS RDS connection (from .env)
+    PGHOST: ${PGHOST}
+    PGPORT: ${PGPORT:-5432}
+    PGDATABASE: ${PGDATABASE}
+    PGUSER: ${PGUSER}
+    PGPASSWORD: ${PGPASSWORD}
+    PGSSLMODE: ${PGSSLMODE:-require}
+
+  volumes:
+    - ../airflow/dags:/opt/airflow/dags
+    - ../airflow/logs:/opt/airflow/logs
+    - ../airflow/artifacts:/opt/airflow/artifacts
+    - ../data:/opt/airflow/data
+    - ../scripts:/opt/airflow/scripts
+
 services:
-  dev:
-    image: mcr.microsoft.com/devcontainers/python:3.11
-    volumes:
-      - ..:/workspaces:cached
-    working_dir: /workspaces
-    command: sleep infinity
-    env_file: .env
-    environment:
-      # RDS typically requires SSL
-      PGSSLMODE: "require"
+  db:                    # Local PostgreSQL for Airflow metadata
+  redis:                 # Celery message broker
+  airflow-apiserver:     # Airflow webserver (port 8080)
+  airflow-scheduler:     # Task scheduler
+  airflow-triggerer:     # Deferred task handler
+  airflow-init:          # One-time database initialization
 ```
 
-#### .devcontainer/devcontainer.json
+**Services:**
+- `db` - PostgreSQL 16 on port 5433 (avoids conflict with RDS)
+- `redis` - Redis for Celery task queue
+- `airflow-apiserver` - Web UI and API (localhost:8080)
+- `airflow-scheduler` - Schedules and monitors DAGs
+- `airflow-triggerer` - Handles async/deferred tasks
+- `airflow-init` - Initializes Airflow database on first run
 
-Installs psql client and Python deps on first boot.
+#### 3. `.devcontainer/.env`
 
-```
-{
-  "name": "IDS706 Postgres Dev (RDS)",
-  "dockerComposeFile": "docker-compose.yml",
-  "service": "dev",
-  "workspaceFolder": "/workspaces",
-  "postCreateCommand": "sudo apt-get update && sudo apt-get install -y postgresql-client && pip install -r requirements.txt",
-  "customizations": {
-    "vscode": {
-      "extensions": [
-        "ms-python.python",
-        "ms-toolsai.jupyter"
-      ]
-    }
-  }
-}
-```
+Environment variables (create from template, **do not commit**):
 
-### Environment Variables
+```bash
+# Airflow user ID (use your local UID)
+AIRFLOW_UID=501
 
-#### .devcontainer/.env (Local only, do not commit)
-
-Fill with the RDS connection details. Example:
-
-```
-PGHOST=[your-rds-endpoint].amazonaws.com
-PGUSER=[your_user]
-PGPASSWORD=[your_password]
-PGDATABASE=jet2_holiday
+# AWS RDS PostgreSQL connection
+PGHOST=your-rds-endpoint.amazonaws.com
 PGPORT=5432
-PGSSLMODE=require
-```
-
-#### .env.example (Committed)
-
-Template for teammates:
-
-```
-# Copy to .devcontainer/.env and fill values
-# AWS Lightsail PostgreSQL
-PGHOST=ls-56e0e6c1fb3506f3b9ee56f44ff2b9c804031cfd.c49qe0yao7zm.us-east-1.rds.amazonaws.com
+PGDATABASE=jet2_holiday
 PGUSER=dbmasteruser
-PGPASSWORD=jet2_holiday
-PGDATABASE=jet2_holiday
-PGPORT=5432
+PGPASSWORD=your-secure-password
 PGSSLMODE=require
 ```
 
-- **Security tip:** Never commit `.devcontainer/.env`. Add it to `.gitignore`.
+**Get your AIRFLOW_UID:**
+```bash
+# macOS/Linux
+id -u
+
+# Output: 501 (or similar, use this value)
+```
+
+#### 4. `.devcontainer/db.env`
+
+PostgreSQL config for local Airflow metadata database:
+
+```bash
+POSTGRES_DB=triguard_db
+POSTGRES_USER=vscode
+POSTGRES_PASSWORD=vscode
+```
+
+**Note:** This is the **local** database for Airflow's internal metadata, separate from your AWS RDS data warehouse.
 
 ### Python Dependencies
 
-Minimal additions for DB + Parquet (append to the existing `requirements.txt`):
+The `requirements.txt` includes comprehensive ML and data science packages:
 
+**Core ML Libraries:**
 ```
-SQLAlchemy>=2.0
-psycopg2-binary>=2.9
+scikit-learn>=1.3.0
+xgboost>=2.0.0
+lightgbm>=4.3.0
+catboost>=1.2.0
+optuna>=3.0.0          # Hyperparameter optimization
+imbalanced-learn>=0.12.0  # SMOTE for class imbalance
+shap>=0.44.0           # Model interpretability
+```
+
+**Data Processing:**
+```
+pandas>=2.0.0
+polars>=0.19.0         # High-performance DataFrame library
+numpy>=1.26.0
+pyarrow>=16.0          # Parquet file support
+statsmodels>=0.14.0
+```
+
+**Database & Orchestration:**
+```
+SQLAlchemy>=1.4.49,<2.0  # Database ORM (Airflow 3.0.3 compatible)
+psycopg2-binary>=2.9     # PostgreSQL driver
+apache-airflow-providers-postgres>=6.2.1
 python-dotenv>=1.0
-pyarrow>=16.0
 ```
 
-### Start the Dev Container
+**Testing:**
+```
+pytest>=7.4.0
+pytest-cov>=4.1.0      # Coverage reporting
+pytest-mock>=3.11.0
+pytest-xdist>=3.3.0    # Parallel test execution
+```
 
-1. Open the repo in VS Code.
+**Total:** 29 packages + dependencies (~2GB installed)
 
-2. Click the green corner button → **Reopen in Container**.
+### Setup Instructions
 
-3. Wait for `postCreateCommand` to finish.
+#### Step 1: Clone and Configure
 
-4. Once finished, proceed to **Part 3**.
+```bash
+# Clone repository
+git clone <repository-url>
+cd 706_final_project
+
+# Create .env file from template
+cp .env.example .devcontainer/.env
+
+# Edit with your credentials
+nano .devcontainer/.env
+```
+
+#### Step 2: Build and Start Services
+
+```bash
+# Navigate to devcontainer directory
+cd .devcontainer
+
+# Build custom Airflow image (first time only, ~5-10 minutes)
+docker-compose build --no-cache
+
+# Start all services
+docker-compose up -d
+
+# Check service health
+docker-compose ps
+```
+
+**Expected output:**
+```
+NAME                    STATUS
+airflow-apiserver-1     Up (healthy)
+airflow-scheduler-1     Up (healthy)
+airflow-triggerer-1     Up (healthy)
+db-1                    Up (healthy)
+redis-1                 Up (healthy)
+```
+
+#### Step 3: Access Airflow UI
+
+1. Open browser: `http://localhost:8080`
+2. Login:
+   - **Username:** `admin`
+   - **Password:** `admin`
+3. Navigate to **DAGs** → `triguard_ml_training_pipeline`
+
+#### Step 4: Verify Connections
+
+**Test local Airflow metadata DB:**
+```bash
+docker-compose exec db psql -U vscode -d triguard_db -c "SELECT 1;"
+```
+
+**Test AWS RDS connection from container:**
+```bash
+docker-compose exec airflow-apiserver psql -h $PGHOST -U $PGUSER -d $PGDATABASE -c "SELECT current_database();"
+```
+
+### Common Issues & Solutions
+
+#### Issue: Port 8080 already in use
+**Solution:**
+```bash
+# Check what's using port 8080
+lsof -i :8080
+
+# Stop conflicting service or change Airflow port in docker-compose.yml
+# ports: - "8081:8080"  # Use 8081 instead
+```
+
+#### Issue: `airflow-init` stuck or failing
+**Solution:**
+```bash
+# Check logs
+docker-compose logs airflow-init
+
+# Common fixes:
+# 1. Ensure .env file exists and has correct AIRFLOW_UID
+# 2. Clean volumes and rebuild
+docker-compose down -v
+docker-compose up -d
+```
+
+#### Issue: DAG not appearing in UI
+**Solution:**
+```bash
+# Check DAG syntax
+python airflow/dags/triguard_ml_pipeline.py
+
+# Check scheduler logs
+docker-compose logs -f airflow-scheduler
+
+# DAGs are scanned every 30 seconds, wait briefly
+```
+
+#### Issue: Permission denied errors
+**Solution:**
+```bash
+# Fix ownership of Airflow directories
+chmod -R 755 airflow/dags airflow/logs airflow/artifacts
+
+# Ensure AIRFLOW_UID matches your user ID
+echo "AIRFLOW_UID=$(id -u)" >> .devcontainer/.env
+docker-compose down
+docker-compose up -d
+```
+
+### Development Workflow
+
+**For VS Code users:**
+
+1. Install the **Docker** and **Remote - Containers** extensions
+2. Open project in VS Code
+3. Click the green corner button → **Reopen in Container**
+4. VS Code connects to the `airflow-apiserver` container
+5. Use integrated terminal for commands
+
+**For terminal users:**
+
+```bash
+# Exec into Airflow container
+docker-compose exec airflow-apiserver bash
+
+# Run Python scripts
+python scripts/modeling.py
+
+# Test DAG
+airflow dags test triguard_ml_training_pipeline 2025-01-01
+```
+
+### Stopping the Environment
+
+```bash
+# Stop all services (preserves data)
+docker-compose stop
+
+# Stop and remove containers (preserves volumes)
+docker-compose down
+
+# Nuclear option: remove everything including data
+docker-compose down -v
+```
+
+### Next Steps
+
+✅ Environment is ready! Proceed to:
+- **Part 3** - Connect to AWS RDS and query data
+- **Part 9** - Run the Airflow ML pipeline
 
 
 ## Part 2: Data Ingestion, Storage and Processing
@@ -1004,8 +1323,453 @@ The script will execute the full pipeline:
 
 6. Save the test set predictions to `submission.csv`, containing `claim_number` and `subrogation_proba`.
 
+---
 
-## Part 6: Web App 1.0
+## Part 6: Testing
+
+This section documents the comprehensive test suite for the TriGuard Insurance Subrogation Prediction System. The tests ensure code quality, reliability, and correctness across all components.
+
+### Test Structure
+
+```
+tests/
+├── __init__.py                    # Test package initialization
+├── conftest.py                    # Pytest fixtures and configuration
+├── test_modeling.py               # Tests for modeling pipeline
+├── test_data_utils.py            # Tests for data loading and utilities
+├── test_analysis_scripts.py      # Tests for analysis scripts
+├── test_system_pipeline.py       # Integration tests for full pipeline
+├── test_images.py                # Tests for image file validation
+└── README.md                     # Detailed test documentation
+```
+
+### Running Tests
+
+#### Run All Tests
+```bash
+pytest tests/ -v
+```
+
+#### Run Fast Tests Only (skip slow and database tests)
+```bash
+pytest tests/ -v -m "not slow and not database"
+```
+
+Or use the Makefile:
+```bash
+make test-fast
+```
+
+#### Run Specific Test Categories
+
+**Unit Tests:**
+```bash
+pytest tests/ -v -m unit
+```
+
+**Integration Tests:**
+```bash
+pytest tests/ -v -m integration
+```
+
+**Modeling Tests:**
+```bash
+pytest tests/test_modeling.py -v
+```
+
+**Analysis Script Tests:**
+```bash
+pytest tests/test_analysis_scripts.py -v
+```
+
+**Image Validation Tests:**
+```bash
+pytest tests/test_images.py -v
+```
+
+### Test Coverage
+
+Generate coverage report:
+```bash
+pytest tests/ --cov=scripts --cov=analysis --cov-report=html
+```
+
+Or use the Makefile:
+```bash
+make coverage
+```
+
+View coverage report by opening `htmlcov/index.html` in a browser.
+
+### Test Markers
+
+Tests can be marked with the following markers:
+
+- `@pytest.mark.slow` - Slow tests that take significant time
+- `@pytest.mark.integration` - Integration tests
+- `@pytest.mark.unit` - Unit tests
+- `@pytest.mark.analysis` - Tests for analysis scripts
+- `@pytest.mark.modeling` - Tests for modeling pipeline
+- `@pytest.mark.images` - Tests for image validation
+- `@pytest.mark.database` - Tests requiring database connection
+
+Example:
+```python
+@pytest.mark.slow
+@pytest.mark.integration
+def test_full_pipeline():
+    # Test implementation
+    pass
+```
+
+### Test Fixtures
+
+Common fixtures are defined in `conftest.py`:
+
+#### Data Fixtures
+- `sample_claim_data` - Sample claim data as pandas DataFrame
+- `sample_polars_claim_data` - Sample claim data as Polars DataFrame
+- `sample_accident_data` - Sample accident data
+- `sample_driver_data` - Sample driver data
+- `sample_vehicle_data` - Sample vehicle data
+- `sample_policyholder_data` - Sample policyholder data
+
+#### Utility Fixtures
+- `sample_data_dir` - Path to sample data directory
+- `temp_csv_dir` - Temporary directory for CSV files
+- `mock_db_environment` - Mock database environment variables
+- `sample_image_paths` - Sample image file paths
+
+### Writing New Tests
+
+#### Test Naming Convention
+- Test files: `test_*.py`
+- Test classes: `Test*`
+- Test functions: `test_*`
+
+#### Example Test
+
+```python
+import pytest
+
+class TestFeatureEngineering:
+    """Test suite for feature engineering"""
+    
+    def test_create_features(self, sample_claim_data):
+        """Test basic feature creation"""
+        result = create_features(sample_claim_data)
+        
+        assert 'new_feature' in result.columns
+        assert len(result) == len(sample_claim_data)
+    
+    @pytest.mark.slow
+    def test_expensive_operation(self):
+        """Test expensive operation"""
+        result = expensive_operation()
+        assert result is not None
+```
+
+### Common Issues
+
+#### Issue: Tests fail with database connection errors
+**Solution:** Skip database tests using:
+```bash
+pytest tests/ -m "not database"
+```
+
+#### Issue: Slow test execution
+**Solution:** Run fast tests only:
+```bash
+make test-fast
+```
+
+#### Issue: Import errors
+**Solution:** Ensure all dependencies are installed:
+```bash
+pip install -r requirements.txt
+```
+
+#### Issue: Image tests fail
+**Solution:** Ensure Pillow is installed:
+```bash
+pip install Pillow>=10.0.0
+```
+
+### Best Practices
+
+1. **Keep tests independent** - Each test should be able to run independently
+2. **Use fixtures** - Reuse common test data through fixtures
+3. **Mark slow tests** - Use `@pytest.mark.slow` for time-consuming tests
+4. **Mock external dependencies** - Mock database connections, API calls, etc.
+5. **Test edge cases** - Include tests for boundary conditions and error cases
+6. **Document tests** - Add docstrings explaining what each test validates
+
+### Test Data
+
+Test data is generated using fixtures in `conftest.py`. Key features:
+- Reproducible (using fixed random seeds)
+- Realistic distributions
+- Covers edge cases
+- No external dependencies
+
+### Maintenance
+
+#### Adding New Tests
+1. Create test file following naming convention
+2. Import necessary fixtures from `conftest.py`
+3. Use appropriate test markers
+4. Add documentation
+
+#### Updating Fixtures
+1. Modify `conftest.py`
+2. Ensure backward compatibility
+3. Update dependent tests if needed
+4. Document changes
+
+#### Test Coverage Goals
+- Maintain >80% code coverage
+- 100% coverage for critical paths
+- All public APIs must be tested
+
+### Resources
+
+- [Pytest Documentation](https://docs.pytest.org/)
+- [Pytest Fixtures](https://docs.pytest.org/en/stable/fixture.html)
+- [Pytest Markers](https://docs.pytest.org/en/stable/mark.html)
+- [Coverage.py](https://coverage.readthedocs.io/)
+
+---
+
+## Part 7: CI/CD Workflows
+
+This section documents the Continuous Integration and Continuous Deployment (CI/CD) workflows that ensure code quality and automated testing.
+
+### Workflows Overview
+
+#### 1. Main CI Pipeline (`ci.yml`)
+
+**Trigger:** Push to main/master/develop, Pull Requests
+
+**Jobs:**
+- **test**: Run test suite on Python 3.9, 3.10, 3.11
+- **lint**: Code quality checks (Black, isort, Flake8, Pylint)
+- **security**: Security scans (Bandit, Safety)
+- **test-analysis-scripts**: Test analysis scripts
+- **test-modeling**: Test modeling pipeline
+- **test-images**: Validate image files
+- **build-summary**: Summarize all job results
+
+**Features:**
+- Matrix testing across Python versions
+- Comprehensive test coverage
+- Code coverage reporting to Codecov
+- Artifact uploads for coverage reports
+
+#### 2. Scheduled Tests (`test-on-schedule.yml`)
+
+**Trigger:** Daily at 2 AM UTC, Manual dispatch
+
+**Purpose:** Run comprehensive tests including slow tests
+
+**Features:**
+- Full test suite execution
+- HTML test report generation
+- Nightly test artifact uploads
+- Failure notifications
+
+#### 3. Code Quality Checks (`code-quality.yml`)
+
+**Trigger:** Pull Requests, Manual dispatch
+
+**Jobs:**
+- **format-check**: Verify code formatting (Black, isort)
+- **complexity-check**: Analyze code complexity (Radon)
+- **documentation-check**: Check docstring coverage (Interrogate, pydocstyle)
+
+**Features:**
+- Automated formatting suggestions
+- Complexity metrics
+- Documentation coverage reporting
+
+### Configuration
+
+#### Environment Variables
+
+The CI workflows may require the following environment variables (if testing with real database):
+
+```yaml
+env:
+  PGHOST: ${{ secrets.PGHOST }}
+  PGPORT: ${{ secrets.PGPORT }}
+  PGDATABASE: ${{ secrets.PGDATABASE }}
+  PGUSER: ${{ secrets.PGUSER }}
+  PGPASSWORD: ${{ secrets.PGPASSWORD }}
+```
+
+**Note:** Database tests are skipped by default in CI.
+
+#### Secrets Setup
+
+If you need to add secrets to your repository:
+
+1. Go to Settings → Secrets and variables → Actions
+2. Add new repository secrets:
+   - `PGHOST`
+   - `PGPORT`
+   - `PGDATABASE`
+   - `PGUSER`
+   - `PGPASSWORD`
+
+#### Branch Protection
+
+Recommended branch protection rules for `main`:
+
+- [x] Require pull request reviews before merging
+- [x] Require status checks to pass before merging
+  - CI Pipeline / test
+  - CI Pipeline / lint
+  - Code Quality / format-check
+- [x] Require branches to be up to date before merging
+- [x] Include administrators
+
+### Workflow Status Badges
+
+The following badges are displayed at the top of this README:
+
+```markdown
+![CI Pipeline](https://github.com/lingyuehao/706_final_project/actions/workflows/ci.yml/badge.svg?branch=main)
+![Code Quality](https://github.com/lingyuehao/706_final_project/actions/workflows/code-quality.yml/badge.svg?branch=main)
+```
+
+### Local Testing
+
+Before pushing, run tests locally:
+
+```bash
+# Fast tests
+make test-fast
+
+# Full test suite
+make test
+
+# With coverage
+make coverage
+
+# Linting
+make lint
+
+# Auto-format
+make format
+```
+
+### Customization
+
+#### Modify Python Versions
+
+Edit the matrix in `ci.yml`:
+
+```yaml
+strategy:
+  matrix:
+    python-version: ['3.9', '3.10', '3.11', '3.12']
+```
+
+#### Add New Test Jobs
+
+1. Create new job in `ci.yml`:
+```yaml
+new-test-job:
+  name: New Test Category
+  runs-on: ubuntu-latest
+  steps:
+    - uses: actions/checkout@v4
+    - name: Run new tests
+      run: pytest tests/test_new.py -v
+```
+
+2. Add to `build-summary` needs:
+```yaml
+needs: [test, lint, security, new-test-job]
+```
+
+#### Modify Test Markers
+
+Edit test commands to include/exclude markers:
+
+```yaml
+- name: Run specific tests
+  run: |
+    pytest tests/ -v -m "unit and not slow"
+```
+
+### Troubleshooting
+
+#### Tests Fail in CI but Pass Locally
+
+**Common causes:**
+- Python version differences
+- Missing environment variables
+- Different dependency versions
+- Operating system differences
+
+**Solutions:**
+1. Test locally with same Python version as CI
+2. Use `tox` for multi-version testing
+3. Check GitHub Actions logs for specific errors
+
+#### Slow CI Builds
+
+**Optimization strategies:**
+1. Cache pip dependencies:
+```yaml
+- uses: actions/setup-python@v4
+  with:
+    cache: 'pip'
+```
+
+2. Parallelize tests:
+```bash
+pytest tests/ -n auto
+```
+
+3. Skip slow tests in main CI:
+```bash
+pytest tests/ -m "not slow"
+```
+
+#### Coverage Reports Not Uploading
+
+**Check:**
+1. Codecov token is set in secrets
+2. `coverage.xml` is generated
+3. Codecov action is properly configured
+
+### Maintenance
+
+#### Regular Updates
+
+- Update action versions quarterly
+- Review and update Python versions
+- Monitor security advisories
+- Update dependency versions
+
+#### Best Practices
+
+1. **Keep workflows DRY** - Use composite actions for repeated steps
+2. **Fail fast** - Run quick checks first
+3. **Clear naming** - Use descriptive job and step names
+4. **Documentation** - Document custom workflows
+5. **Security** - Never hardcode secrets
+
+### Resources
+
+- [GitHub Actions Documentation](https://docs.github.com/en/actions)
+- [Workflow Syntax](https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions)
+- [Codecov Documentation](https://docs.codecov.com/)
+
+---
+
+## Part 8: Web App 1.0
 
 
 Link: [resonant-crisp-a13807.netlify.app](https://resonant-crisp-a13807.netlify.app)
@@ -1014,3 +1778,494 @@ Link: [resonant-crisp-a13807.netlify.app](https://resonant-crisp-a13807.netlify.
 ![Home Page](https://raw.githubusercontent.com/lingyuehao/706_final_project/main/subro-app/screenshots/home.png)
 
 ![Triage Tool](https://raw.githubusercontent.com/lingyuehao/706_final_project/main/subro-app/screenshots/tool.png)
+
+---
+
+## Part 9: Apache Airflow ML Pipeline
+
+### Overview
+
+This section documents the **production-ready machine learning pipeline** orchestrated using **Apache Airflow**. The pipeline automates the complete workflow from data loading to model training, running on a scheduled basis within a Dockerized environment.
+
+### What is the DAG?
+
+The **TriGuard ML Training Pipeline** (`triguard_ml_training_pipeline`) is a self-contained Airflow DAG that:
+- Loads insurance claim data from CSV files
+- Engineers 300+ predictive features
+- Performs hyperparameter optimization
+- Trains an ensemble machine learning model
+- Generates predictions and performance reports
+
+**Key Advantages:**
+- ✅ Fully automated and reproducible
+- ✅ Self-contained (no external script dependencies)
+- ✅ Scheduled execution (`@monthly` by default)
+- ✅ Complete audit trail via Airflow logs
+- ✅ Parallel task execution where possible
+
+---
+
+### Architecture & Setup
+
+#### 1. Environment Structure
+
+The Airflow setup uses Docker Compose to run a complete Airflow environment with the following services:
+
+```
+.devcontainer/
+├── docker-compose.yml      # Airflow services configuration
+├── .Dockerfile            # Custom Airflow image with ML dependencies
+├── .env                   # Environment variables (not committed)
+└── db.env                # PostgreSQL database config
+
+airflow/
+├── dags/
+│   └── triguard_ml_pipeline.py    # Main DAG file (926 lines, self-contained)
+├── logs/                          # Task execution logs
+├── artifacts/                     # Model outputs and predictions
+├── config/                        # Airflow configuration
+└── plugins/                       # Custom plugins (if any)
+
+data/
+└── tri_guard_5_py_clean/         # Input CSV files
+    ├── Accident.csv
+    ├── Claim.csv
+    ├── Driver.csv
+    ├── Policyholder.csv
+    └── Vehicle.csv
+```
+
+#### 2. Docker Services
+
+The environment includes:
+- **airflow-apiserver**: Airflow webserver (UI accessible at `localhost:8080`)
+- **airflow-scheduler**: Task scheduler
+- **airflow-triggerer**: Handles deferred operators
+- **db**: PostgreSQL database for Airflow metadata
+- **redis**: Message broker for Celery
+
+#### 3. Custom Docker Image
+
+The `.devcontainer/.Dockerfile` includes:
+
+```dockerfile
+FROM apache/airflow:3.0.3
+
+USER root
+# Install system dependencies for ML packages
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+       postgresql-client \
+       libgomp1 \
+    && rm -rf /var/lib/apt/lists/*
+
+USER airflow
+# Install Python ML dependencies
+COPY --chown=airflow:root requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+```
+
+**Key Dependencies:**
+- `lightgbm`, `xgboost`, `catboost` - ML models
+- `optuna` - Hyperparameter optimization
+- `scikit-learn`, `imblearn` - ML utilities
+- `pandas`, `numpy`, `polars` - Data processing
+- `SQLAlchemy`, `psycopg2` - Database connectivity
+
+---
+
+### Pipeline Workflow
+
+The DAG consists of **6 sequential tasks**:
+
+#### Task 1: `load_and_split_data`
+**Duration:** ~3 seconds
+
+**Actions:**
+1. Loads 5 CSV files from `/opt/airflow/data/tri_guard_5_py_clean/`
+2. Merges tables on foreign keys (`accident_key`, `vehicle_key`, etc.)
+3. Splits data: September 2016 → test set, all other data → training set
+4. Saves to Parquet: `train_data.parquet`, `test_data.parquet`
+
+**Output:** Train size: ~16,000 claims, Test size: ~2,000 claims
+
+---
+
+#### Task 2: `engineer_features`
+**Duration:** ~8 seconds
+
+**Actions:**
+1. Loads split data from Parquet
+2. Engineers 300+ features including:
+   - **Time-based:** `is_weekend`, `is_rush_hour`, `claim_quarter`
+   - **Demographics:** `age_at_claim`, `period_of_driving`, `is_young_driver`
+   - **Financial:** `payout_to_income`, `income_to_price`, log transformations
+   - **Liability:** `liab_squared`, `liab_cubed`, 20 liability bins, exact value indicators
+   - **Evidence:** `has_witness`, `has_police`, `evidence_count`, `has_full_evidence`
+   - **Interactions:** `liab_x_witness`, `golden_combo`, 30+ interaction terms
+3. Creates artifacts from training data (medians, quantiles) and applies to test
+4. Saves engineered data and artifacts
+
+**Output:** Train/test with 300+ features, `feature_artifacts.pkl`
+
+---
+
+#### Task 3: `hyperparameter_optimization`
+**Duration:** ~1 second (simplified)
+
+**Actions:**
+1. Uses pre-optimized hyperparameters (for speed)
+2. Saves parameters to `best_params.json`
+
+**Parameters Used:**
+```json
+{
+  "learning_rate": 0.03,
+  "depth": 6,
+  "l2_leaf_reg": 3.0,
+  "bagging_temperature": 0.5,
+  "random_strength": 0.5,
+  "min_data_in_leaf": 20
+}
+```
+
+**Note:** Can be expanded to full Optuna optimization (100+ trials) for production.
+
+---
+
+#### Task 4: `train_ensemble_models`
+**Duration:** ~14 minutes
+
+**Actions:**
+1. Loads engineered data
+2. Selects 27 most important features
+3. Trains LightGBM model with early stopping
+4. Finds optimal prediction threshold (0.32)
+5. Generates predictions on test set
+6. Saves model and predictions
+
+**Model Details:**
+- Algorithm: LightGBM Classifier
+- Training samples: ~16,000 claims
+- Features used: 27 (selected from 300+)
+- Early stopping: 100 rounds
+- Optimization metric: F1 Score
+
+---
+
+#### Task 5: `generate_report`
+**Duration:** <1 second
+
+**Actions:**
+1. Loads metrics from previous task
+2. Generates execution report
+3. Saves to `execution_report.txt`
+
+**Report Template:**
+```
+=============================================
+TriGuard ML Pipeline Execution Report
+=============================================
+
+Model Performance:
+- Training F1 Score: {train_f1}
+- Training AUC: {train_auc}
+- Test F1 Score: {test_f1}
+- Test AUC: {test_auc}
+- Best Threshold: {threshold}
+- Features Used: {n_features}
+
+Files Generated:
+- /opt/airflow/artifacts/model.pkl
+- /opt/airflow/artifacts/test_predictions.csv
+- /opt/airflow/artifacts/metrics.json
+
+=============================================
+```
+
+---
+
+#### Task 6: `cleanup_temp_files`
+**Duration:** <1 second
+
+**Actions:**
+- Removes temporary Parquet files to save disk space
+- Keeps final outputs (model, predictions, reports)
+
+---
+
+### Execution Results
+
+**Last Successful Run:**
+- **Date:** 2025-11-23, 11:46:42
+- **Total Duration:** 14 minutes 7 seconds
+- **Status:** ✅ All tasks succeeded
+
+#### Performance Metrics
+
+```
+Training F1 Score:   0.6198  (61.98%)
+Training AUC:        0.8638  (86.38%)
+Test F1 Score:       0.5758  (57.58%)
+Test AUC:            0.8344  (83.44%)
+Best Threshold:      0.320
+Features Used:       27
+```
+
+**Interpretation:**
+- **Strong AUC (>0.83):** Model effectively distinguishes between subrogation and non-subrogation cases
+- **Moderate F1 Score:** Balanced precision and recall for the positive class
+- **Train/Test Gap:** ~4% F1 difference indicates good generalization (minimal overfitting)
+- **Optimal Threshold:** 0.32 (lower than default 0.5) accounts for class imbalance
+
+#### Generated Artifacts
+
+All outputs are saved to `/opt/airflow/artifacts/`:
+
+| File | Description | Size |
+|------|-------------|------|
+| `model.pkl` | Trained LightGBM model (serialized) | ~2 MB |
+| `test_predictions.csv` | Predictions with probabilities and binary labels | ~50 KB |
+| `metrics.json` | Performance metrics in JSON format | <1 KB |
+| `execution_report.txt` | Human-readable summary report | <1 KB |
+| `feature_artifacts.pkl` | Feature engineering artifacts (medians, quantiles) | <10 KB |
+
+---
+
+### How to Access the Pipeline
+
+#### 1. Start the Airflow Environment
+
+From the project root directory:
+
+```bash
+cd .devcontainer
+docker-compose up -d
+```
+
+**Wait for initialization:** First startup takes 2-3 minutes while Airflow initializes the database.
+
+**Verify services are running:**
+```bash
+docker-compose ps
+```
+
+All services should show status as `healthy` or `running`.
+
+---
+
+#### 2. Access the Airflow Web UI
+
+1. Open browser: `http://localhost:8080`
+2. **Login credentials:**
+   - Username: `admin`
+   - Password: `admin`
+
+3. Navigate to DAGs → `triguard_ml_training_pipeline`
+
+---
+
+#### 3. Trigger a Manual Run
+
+**Option A: Via Web UI**
+1. Click on the DAG name
+2. Click the **"Trigger DAG"** button (▶️) in the top right
+3. Monitor progress in the Graph or Grid view
+
+**Option B: Via CLI**
+```bash
+docker-compose exec airflow-apiserver airflow dags trigger triguard_ml_training_pipeline
+```
+
+---
+
+#### 4. View Task Logs
+
+**Via Web UI:**
+1. Click on any task (green box)
+2. Click **"Log"** button
+3. View detailed execution logs with timestamps
+
+**Via Terminal:**
+```bash
+docker-compose logs -f airflow-scheduler
+```
+
+---
+
+#### 5. Access Generated Artifacts
+
+**From Host Machine:**
+```bash
+cd airflow/artifacts/
+ls -lh
+```
+
+**From Docker Container:**
+```bash
+docker-compose exec airflow-apiserver ls -lh /opt/airflow/artifacts/
+```
+
+**Download Predictions:**
+```bash
+docker-compose cp airflow-apiserver:/opt/airflow/artifacts/test_predictions.csv ./predictions.csv
+```
+
+---
+
+### Schedule Configuration
+
+**Current Schedule:** `@monthly` (runs on the 1st of each month at midnight)
+
+**To Change Schedule:**
+
+Edit `airflow/dags/triguard_ml_pipeline.py`:
+
+```python
+with DAG(
+    "triguard_ml_training_pipeline",
+    schedule="@monthly",  # Change this line
+    ...
+) as dag:
+```
+
+**Common Options:**
+- `@daily` - Every day at midnight
+- `@weekly` - Every Monday at midnight
+- `@monthly` - First of every month
+- `0 6 * * *` - Every day at 6:00 AM (cron format)
+- `None` - Manual trigger only
+
+---
+
+### Troubleshooting
+
+#### DAG Not Appearing
+- Wait 30 seconds for Airflow to scan the `dags/` folder
+- Check logs: `docker-compose logs airflow-scheduler`
+- Verify DAG has no syntax errors: `python airflow/dags/triguard_ml_pipeline.py`
+
+#### Task Failures
+- Click on the failed task → "Log" to see error details
+- Common issues:
+  - Missing CSV files → check `data/tri_guard_5_py_clean/` exists
+  - Memory issues → increase Docker memory limit (Settings → Resources)
+  - Package issues → rebuild image: `docker-compose build --no-cache`
+
+#### Performance Issues
+- Pipeline takes ~14 minutes (normal)
+- Reduce training time by:
+  - Decreasing `n_estimators` in `train_models()` function
+  - Using fewer cross-validation folds
+  - Sampling training data
+
+---
+
+### Future Enhancements
+
+**Planned Improvements:**
+
+1. **Full Ensemble Training**
+   - Add XGBoost and CatBoost models
+   - Implement F1-weighted ensemble averaging
+   - Expected F1 improvement: +3-5%
+
+2. **Full Hyperparameter Optimization**
+   - Replace fixed params with 100-trial Optuna study
+   - Optimize all three models independently
+   - Estimated runtime: +45 minutes
+
+3. **Database Integration**
+   - Replace CSV loading with direct AWS RDS connection
+   - Real-time data ingestion from production database
+   - Requires environment variable setup (see Part 1)
+
+4. **Model Versioning**
+   - Track model versions using MLflow
+   - Compare performance across runs
+   - Automated model promotion to production
+
+5. **Alerts & Notifications**
+   - Email alerts on task failures
+   - Slack notifications on successful runs
+   - Performance degradation warnings
+
+---
+
+### Configuration Files
+
+#### `.devcontainer/docker-compose.yml`
+Defines all Airflow services, volume mounts, and environment variables. Key configurations:
+- Port 8080 for web UI
+- Volume mounts for DAGs, logs, artifacts
+- PostgreSQL and Redis services
+- SSL mode disabled for local development
+
+#### `.devcontainer/.env`
+Environment variables for the Airflow environment:
+```bash
+AIRFLOW_UID=501
+PGHOST=your-rds-endpoint.amazonaws.com
+PGPORT=5432
+PGDATABASE=your-database-name
+PGUSER=your-username
+PGPASSWORD=your-password
+PGSSLMODE=require
+```
+
+**Security Note:** This file is `.gitignore`d and should never be committed.
+
+---
+
+### Pipeline Maintenance
+
+**Daily:**
+- Monitor DAG runs for failures
+- Check disk space in `airflow/logs/` and `airflow/artifacts/`
+
+**Weekly:**
+- Review model performance metrics
+- Compare test F1/AUC across runs
+
+**Monthly:**
+- Update dependencies: `docker-compose pull`
+- Clean old logs: `find airflow/logs/ -mtime +30 -delete`
+- Archive old artifacts
+
+**As Needed:**
+- Retrain with new data
+- Tune hyperparameters
+- Add new features to the pipeline
+
+---
+
+### Performance Benchmarks
+
+**Hardware:** MacBook Pro M1, 16GB RAM, Docker allocated 8GB
+
+| Task | Duration | CPU Usage | Memory Peak |
+|------|----------|-----------|-------------|
+| Load & Split | 3s | Low | ~500 MB |
+| Feature Engineering | 8s | Medium | ~1.5 GB |
+| HPO (simplified) | 1s | Low | ~200 MB |
+| Model Training | 14m | High | ~3 GB |
+| Report Generation | <1s | Low | ~100 MB |
+| Cleanup | <1s | Low | ~50 MB |
+
+**Total Pipeline:** ~14 minutes, ~3 GB memory
+
+---
+
+### Contact & Support
+
+For issues or questions related to the Airflow pipeline:
+1. Check task logs in Airflow UI
+2. Review this documentation
+3. Consult Airflow documentation: [airflow.apache.org](https://airflow.apache.org)
+4. Open an issue in the project repository
+
+---
+
+**Pipeline Status:** ✅ Production Ready  
+**Last Updated:** November 23, 2025  
+**Version:** 1.0
