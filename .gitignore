@@ -65,3 +65,16 @@ Thumbs.db
 
 # Logs
 *.log
+
+# Airflow
+logs/
+plugins/__pycache__/
+config/airflow.cfg
+artifacts/*.parquet
+artifacts/*.pkl
+artifacts/*.json
+artifacts/*.txt
+.devcontainer/.env
+.devcontainer/db.env
+airflow-webserver.pid
+airflow-scheduler.pid
