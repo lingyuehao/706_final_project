@@ -1512,32 +1512,6 @@ Test data is generated using fixtures in `conftest.py`. Key features:
 - Covers edge cases
 - No external dependencies
 
-### Maintenance
-
-#### Adding New Tests
-1. Create test file following naming convention
-2. Import necessary fixtures from `conftest.py`
-3. Use appropriate test markers
-4. Add documentation
-
-#### Updating Fixtures
-1. Modify `conftest.py`
-2. Ensure backward compatibility
-3. Update dependent tests if needed
-4. Document changes
-
-#### Test Coverage Goals
-- Maintain >80% code coverage
-- 100% coverage for critical paths
-- All public APIs must be tested
-
-### Resources
-
-- [Pytest Documentation](https://docs.pytest.org/)
-- [Pytest Fixtures](https://docs.pytest.org/en/stable/fixture.html)
-- [Pytest Markers](https://docs.pytest.org/en/stable/mark.html)
-- [Coverage.py](https://coverage.readthedocs.io/)
-
 ---
 
 ## Part 7: CI/CD Workflows
@@ -1743,29 +1717,6 @@ pytest tests/ -m "not slow"
 1. Codecov token is set in secrets
 2. `coverage.xml` is generated
 3. Codecov action is properly configured
-
-### Maintenance
-
-#### Regular Updates
-
-- Update action versions quarterly
-- Review and update Python versions
-- Monitor security advisories
-- Update dependency versions
-
-#### Best Practices
-
-1. **Keep workflows DRY** - Use composite actions for repeated steps
-2. **Fail fast** - Run quick checks first
-3. **Clear naming** - Use descriptive job and step names
-4. **Documentation** - Document custom workflows
-5. **Security** - Never hardcode secrets
-
-### Resources
-
-- [GitHub Actions Documentation](https://docs.github.com/en/actions)
-- [Workflow Syntax](https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions)
-- [Codecov Documentation](https://docs.codecov.com/)
 
 ---
 
@@ -2140,60 +2091,6 @@ with DAG(
 
 ---
 
-### Troubleshooting
-
-#### DAG Not Appearing
-- Wait 30 seconds for Airflow to scan the `dags/` folder
-- Check logs: `docker-compose logs airflow-scheduler`
-- Verify DAG has no syntax errors: `python airflow/dags/triguard_ml_pipeline.py`
-
-#### Task Failures
-- Click on the failed task → "Log" to see error details
-- Common issues:
-  - Missing CSV files → check `data/tri_guard_5_py_clean/` exists
-  - Memory issues → increase Docker memory limit (Settings → Resources)
-  - Package issues → rebuild image: `docker-compose build --no-cache`
-
-#### Performance Issues
-- Pipeline takes ~14 minutes (normal)
-- Reduce training time by:
-  - Decreasing `n_estimators` in `train_models()` function
-  - Using fewer cross-validation folds
-  - Sampling training data
-
----
-
-### Future Enhancements
-
-**Planned Improvements:**
-
-1. **Full Ensemble Training**
-   - Add XGBoost and CatBoost models
-   - Implement F1-weighted ensemble averaging
-   - Expected F1 improvement: +3-5%
-
-2. **Full Hyperparameter Optimization**
-   - Replace fixed params with 100-trial Optuna study
-   - Optimize all three models independently
-   - Estimated runtime: +45 minutes
-
-3. **Database Integration**
-   - Replace CSV loading with direct AWS RDS connection
-   - Real-time data ingestion from production database
-   - Requires environment variable setup (see Part 1)
-
-4. **Model Versioning**
-   - Track model versions using MLflow
-   - Compare performance across runs
-   - Automated model promotion to production
-
-5. **Alerts & Notifications**
-   - Email alerts on task failures
-   - Slack notifications on successful runs
-   - Performance degradation warnings
-
----
-
 ### Configuration Files
 
 #### `.devcontainer/docker-compose.yml`
@@ -2216,55 +2113,6 @@ PGSSLMODE=require
 ```
 
 **Security Note:** This file is `.gitignore`d and should never be committed.
-
----
-
-### Pipeline Maintenance
-
-**Daily:**
-- Monitor DAG runs for failures
-- Check disk space in `airflow/logs/` and `airflow/artifacts/`
-
-**Weekly:**
-- Review model performance metrics
-- Compare test F1/AUC across runs
-
-**Monthly:**
-- Update dependencies: `docker-compose pull`
-- Clean old logs: `find airflow/logs/ -mtime +30 -delete`
-- Archive old artifacts
-
-**As Needed:**
-- Retrain with new data
-- Tune hyperparameters
-- Add new features to the pipeline
-
----
-
-### Performance Benchmarks
-
-**Hardware:** MacBook Pro M1, 16GB RAM, Docker allocated 8GB
-
-| Task | Duration | CPU Usage | Memory Peak |
-|------|----------|-----------|-------------|
-| Load & Split | 3s | Low | ~500 MB |
-| Feature Engineering | 8s | Medium | ~1.5 GB |
-| HPO (simplified) | 1s | Low | ~200 MB |
-| Model Training | 14m | High | ~3 GB |
-| Report Generation | <1s | Low | ~100 MB |
-| Cleanup | <1s | Low | ~50 MB |
-
-**Total Pipeline:** ~14 minutes, ~3 GB memory
-
----
-
-### Contact & Support
-
-For issues or questions related to the Airflow pipeline:
-1. Check task logs in Airflow UI
-2. Review this documentation
-3. Consult Airflow documentation: [airflow.apache.org](https://airflow.apache.org)
-4. Open an issue in the project repository
 
 ---
 
