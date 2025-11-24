@@ -2142,7 +2142,7 @@ These eight principles work synergistically throughout the TriGuard system. The 
 ---
 
 
-## Group members Acknowledgement
+## Group member Acknowledgement
 **Lingyue Hao**
 **Mingjie Wei**
 **Tina Yuan**
