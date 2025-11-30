@@ -2108,7 +2108,7 @@ PGSSLMODE=require
 
 ## Part 10: Refactoring
 
-### 🧩 Refactoring Overview
+### Goal & Overview
 
 In the context of this data analysis and machine learning pipelines, refactoring helps (without changing its external behavior):
 - Simplify repetitive data operations  
