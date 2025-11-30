@@ -17,7 +17,9 @@
 - [Part 7: CI/CD Workflows](#part-7-cicd-workflows)
 - [Part 8: Web App 1.0](#part-8-web-app-10)
 - [Part 9: Apache Airflow ML Pipeline](#part-9-apache-airflow-ml-pipeline)
-- [Part 10: Data Engineering Principles](#part-10-data-engineering-principles)
+- [Part 10: Refactoring](#part-10-refactoring)
+- [Part 11: Data Engineering Principles](#part-11-data-engineering-principles)
+  
 
 ---
 
@@ -1703,6 +1705,10 @@ pytest tests/ -m "not slow"
 
 **Link:** [resonant-crisp-a13807.netlify.app](https://resonant-crisp-a13807.netlify.app)
 
+This web app provides a lightweight triage tool that helps front-line adjusters quickly evaluate the subrogation potential of a claim. By entering key information—such as model probability, paid amount, pursuit cost, liability clarity, and limitation urgency—users receive an instant assessment that includes an A–E risk band, expected recovery, ROI, and overall priority. The interface is designed for clarity and speed, allowing adjusters to understand value and risk within seconds.
+
+Beyond the calculator, the app offers clear action recommendations and a concise explanation of why each tier was assigned. A demo scenario is also included to help users explore different claim profiles. The clean, modern UI supports quick decision-making and provides an accessible, browser-based way to interpret model outputs without requiring any specialized software.
+
 ![Home Page](https://raw.githubusercontent.com/lingyuehao/706_final_project/main/subro-app/screenshots/home.png)
 
 ![Triage Tool](https://raw.githubusercontent.com/lingyuehao/706_final_project/main/subro-app/screenshots/tool.png)
@@ -2099,7 +2105,11 @@ PGSSLMODE=require
 
 ---
 
-## Part 10: Data Engineering Principles
+
+## Part 10: Refactoring
+
+
+## Part 11: Data Engineering Principles
 
 This section examines how the TriGuard Insurance Subrogation Prediction System embodies fundamental data engineering principles throughout its architecture, implementation, and operational workflow. Each principle is supported by concrete examples from the project's codebase and infrastructure.
 
