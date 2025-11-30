@@ -2108,6 +2108,74 @@ PGSSLMODE=require
 
 ## Part 10: Refactoring
 
+### 🧩 Refactoring Overview
+
+In the context of this data analysis and machine learning pipelines, refactoring helps (without changing its external behavior):
+- Simplify repetitive data operations  
+- Improve readability for collaborators  
+- Reduce potential bugs caused by duplicated logic  
+- Make future modifications or testing easier  
+- Improve organization by separating logic into reusable functions  
+
+---
+
+### What Was Refactored in the Polars Analysis Scripts
+
+The original Polars scripts for analysis using polars were lengthy, repetitive, and procedural in nature. They worked correctly but were difficult to maintain as they grew. The refactoring focused on improving **structure**, **readability**, and **reusability**, while retaining all the original analysis outputs.
+
+### Key Improvements
+
+#### 1. Modular Design
+- Extracted repeated logic into separate functions such as:
+  - `load_data()` to handle CSV imports and data type consistency  
+  - `group_distribution()` for repeatedly used aggregation logic  
+  - `join_accident_claim()` for merging accident and claim datasets  
+  - `compute_high_subrogation()` and `compute_subrogation_indicators()` for targeted analytical steps  
+  - `regression_analysis()` for modeling and metric generation  
+
+This makes it easier to test, debug, or reuse individual steps.
+
+#### 2. Centralized Path Handling
+- Instead of repeating relative paths, output directories and data paths are managed through helper functions (like `create_output_directory`).
+- Ensures all results are stored consistently under a defined output folder (`analysis_results`).
+
+#### 3. Readable and Consistent Comments
+- Comments now explain *why* certain steps are done rather than visually separating blocks.  
+- Removed dashed "separator" comment lines (`# -------`) in favor of concise, context-based documentation.
+
+#### 4. Eliminated Redundant Code
+- Common aggregations (like count distributions and subrogation calculations) were consolidated.  
+- Identical join and filtering logic was replaced with reusable utilities.
+
+#### 5. Improved Data Pipeline Clarity
+- Logical flow of analysis is more visible: **load → transform → analyze → export**.  
+- Each step produces clear, named outputs (e.g., `result1_basic_stats.csv`, `result8_high_subrogation_potential.csv`, etc.).
+
+#### 6. Type Safety and Polars-Specific Best Practices
+- Explicit casting of join keys (e.g., `accident_key` as `Int64`) ensures merges are stable.  
+- Functional chain syntax with Polars kept intact for performance and clarity.
+
+#### 7. Regression Analysis Simplification
+- Regression logic was wrapped in a single function, including:
+  - Feature creation (binary columns)
+  - Encoding categorical variables
+  - Model fitting, prediction, and metrics
+  - Exporting regression coefficients and feature importance  
+
+---
+
+### Benefits of the Refactored Version
+
+| Aspect | Before Refactor | After Refactor |
+|--------|------------------|----------------|
+| **Code Organization** | One long procedural script | Modular with well-defined functions |
+| **Maintainability** | Hard to update individual steps | Each stage is isolated and testable |
+| **Readability** | Repetitive and cluttered | Clean, readable, documented structure |
+| **Extensibility** | Difficult to plug in new analyses | Functions can be reused or extended easily |
+| **Reproducibility** | Ad-hoc CSV writing | Consistent output naming and folder structure |
+
+---
+
 
 ## Part 11: Data Engineering Principles
 
