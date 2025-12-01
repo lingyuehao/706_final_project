@@ -146,8 +146,7 @@ This README provides a comprehensive end-to-end guide for the **TriGuard Insuran
 │  ├─ test_data_utils.py     # Data utility tests
 │  ├─ test_analysis_scripts.py # Analysis script tests
 │  ├─ test_system_pipeline.py # Integration tests
-│  ├─ test_images.py         # Image validation tests
-│  └─ README.md              # Test documentation
+│  └─ test_images.py         # Image validation tests
 │
 ├─ requirements.txt           # Python dependencies
 ├─ pytest.ini                # Pytest configuration
