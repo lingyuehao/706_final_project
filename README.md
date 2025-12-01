@@ -63,7 +63,7 @@ This README provides a comprehensive end-to-end guide for the **TriGuard Insuran
 
 - **Part 5: Machine Learning Pipeline** - Complete ML pipeline with advanced feature engineering (300+ features), SMOTE for class imbalance, Optuna hyperparameter optimization, and F1-weighted ensemble models (LightGBM, XGBoost, CatBoost).
 
-- **Part 6: Testing** - Comprehensive test suite using Pytest with unit tests, integration tests, fixtures, and coverage reporting. Includes test markers for selective execution (fast/slow, unit/integration).
+- **Part 6: Testing** - Pytest-based test suite with unit tests for critical components and system tests for the end-to-end feature pipeline, plus basic image and analysis-script checks.
 
 - **Part 7: CI/CD Workflows** - Automated GitHub Actions workflows for continuous integration (multi-version Python testing), code quality checks (linting, formatting, complexity), security scans, and scheduled test runs.
 
@@ -1327,11 +1327,17 @@ The script will execute the full pipeline:
 
 ## Part 6: Testing
 
-This section documents the comprehensive test suite for the TriGuard Insurance Subrogation Prediction System. The tests ensure code quality, reliability, and correctness across all components.
+This section describes the testing strategy for this project. We use **pytest** to validate both individual components and the end-to-end data engineering pipeline. The tests are designed to cover:
 
-### Test Structure
+- **Unit tests** – fast checks for small pieces of logic (data loading, feature engineering helpers, analysis scripts).
+- **System / integration tests** – full-pipeline checks that merge all tables, engineer features, and verify data quality.
+- **Utility tests** – sanity checks for image assets and other supporting files.
 
-```
+Together, these tests provide confidence that schema assumptions, feature-engineering logic, and the overall pipeline remain stable as the codebase evolves.
+
+### Test Layout
+
+```text
 tests/
 ├── __init__.py                    # Test package initialization
 ├── conftest.py                    # Pytest fixtures and configuration
@@ -1339,9 +1345,50 @@ tests/
 ├── test_data_utils.py            # Tests for data loading and utilities
 ├── test_analysis_scripts.py      # Tests for analysis scripts
 ├── test_system_pipeline.py       # Integration tests for full pipeline
-├── test_images.py                # Tests for image file validation
-└── README.md                     # Detailed test documentation
+└── test_images.py                # Tests for image file validation
 ```
+
+### What We Test
+
+**Data quality & schema (test_data_utils.py)**
+
+- Required columns exist in each core table (e.g., `claim_number`, `accident_site`, `subrogation`).
+
+- Numeric ranges are valid (e.g., `liab_prct` between 0 and 100, payouts > 0).
+
+- Joins across Claim, Accident, Driver, Vehicle, and Policyholder preserve row counts and key columns.
+
+**Exploratory analysis scripts (test_analysis_scripts.py)**
+
+- Polars joins and aggregations run correctly on small in-memory DataFrames.
+
+- Correlations and categorizations used in the write-up (e.g., safety rating buckets, income groups) are computed as expected.
+
+**Feature engineering & modeling helpers (test_modeling.py)**
+
+- Key engineered features (such as `age_at_claim`, `period_of_driving`, `liab_prct`) are non-null after processing.
+
+- Target encoding handles **unseen categories** safely by falling back to global statistics.
+
+- The `SELECTED_FEATURES` configuration is well-formed and most features appear in the engineered dataset (coverage checks).
+
+**System / end-to-end pipeline (test_system_pipeline.py)**
+
+- Merging all five tables followed by feature engineering produces consistent train/test matrices.
+
+- Train and test sets have matching columns and expected row counts.
+
+- No data leakage: test features are built using **training-time artifacts** (e.g., medians for imputation).
+
+- Important binary flags (e.g., `is_single_car`, `has_witness`, `has_police`) remain strictly 0/1.
+
+- The pipeline is deterministic: repeated runs on the same input yield identical feature matrices.
+
+**Image assets (test_images.py)**
+
+- PNG/JPEG files referenced in the README and analysis folders exist in the repository.
+
+- Files can be opened via Pillow without errors, preventing broken images in documentation.
 
 ### Running Tests
 
@@ -1440,70 +1487,6 @@ Common fixtures are defined in `conftest.py`:
 - `mock_db_environment` - Mock database environment variables
 - `sample_image_paths` - Sample image file paths
 
-### Writing New Tests
-
-#### Test Naming Convention
-- Test files: `test_*.py`
-- Test classes: `Test*`
-- Test functions: `test_*`
-
-#### Example Test
-
-```python
-import pytest
-
-class TestFeatureEngineering:
-    """Test suite for feature engineering"""
-    
-    def test_create_features(self, sample_claim_data):
-        """Test basic feature creation"""
-        result = create_features(sample_claim_data)
-        
-        assert 'new_feature' in result.columns
-        assert len(result) == len(sample_claim_data)
-    
-    @pytest.mark.slow
-    def test_expensive_operation(self):
-        """Test expensive operation"""
-        result = expensive_operation()
-        assert result is not None
-```
-
-### Common Issues
-
-#### Issue: Tests fail with database connection errors
-**Solution:** Skip database tests using:
-```bash
-pytest tests/ -m "not database"
-```
-
-#### Issue: Slow test execution
-**Solution:** Run fast tests only:
-```bash
-make test-fast
-```
-
-#### Issue: Import errors
-**Solution:** Ensure all dependencies are installed:
-```bash
-pip install -r requirements.txt
-```
-
-#### Issue: Image tests fail
-**Solution:** Ensure Pillow is installed:
-```bash
-pip install Pillow>=10.0.0
-```
-
-### Best Practices
-
-1. **Keep tests independent** - Each test should be able to run independently
-2. **Use fixtures** - Reuse common test data through fixtures
-3. **Mark slow tests** - Use `@pytest.mark.slow` for time-consuming tests
-4. **Mock external dependencies** - Mock database connections, API calls, etc.
-5. **Test edge cases** - Include tests for boundary conditions and error cases
-6. **Document tests** - Add docstrings explaining what each test validates
-
 ### Test Data
 
 Test data is generated using fixtures in `conftest.py`. Key features:
@@ -1516,60 +1499,54 @@ Test data is generated using fixtures in `conftest.py`. Key features:
 
 ## Part 7: CI/CD Workflows
 
-This section documents the Continuous Integration and Continuous Deployment (CI/CD) workflows that ensure code quality and automated testing.
+This section describes the GitHub Actions workflows that provide Continuous Integration (CI) for this project. The goals are to automatically run tests, enforce code quality, and keep the main branch in a consistently working state.
 
 ### Workflows Overview
 
-#### 1. Main CI Pipeline (`ci.yml`)
+#### 1. Main CI Pipeline (`.github/workflows/ci.yml`)
 
-**Trigger:** Push to main/master/develop, Pull Requests
-
-**Jobs:**
-- **test**: Run test suite on Python 3.9, 3.10, 3.11
-- **lint**: Code quality checks (Black, isort, Flake8, Pylint)
-- **security**: Security scans (Bandit, Safety)
-- **test-analysis-scripts**: Test analysis scripts
-- **test-modeling**: Test modeling pipeline
-- **test-images**: Validate image files
-- **build-summary**: Summarize all job results
-
-**Features:**
-- Matrix testing across Python versions
-- Comprehensive test coverage
-- Code coverage reporting to Codecov
-- Artifact uploads for coverage reports
-
-#### 2. Scheduled Tests (`test-on-schedule.yml`)
-
-**Trigger:** Daily at 2 AM UTC, Manual dispatch
-
-**Purpose:** Run comprehensive tests including slow tests
-
-**Features:**
-- Full test suite execution
-- HTML test report generation
-- Nightly test artifact uploads
-- Failure notifications
-
-#### 3. Code Quality Checks (`code-quality.yml`)
-
-**Trigger:** Pull Requests, Manual dispatch
+**Trigger:** Push to `main` / `master` / `develop`, and all Pull Requests.
 
 **Jobs:**
-- **format-check**: Verify code formatting (Black, isort)
-- **complexity-check**: Analyze code complexity (Radon)
-- **documentation-check**: Check docstring coverage (Interrogate, pydocstyle)
+- **test** – Run the pytest test suite on multiple Python versions (e.g., 3.9–3.11).
+- **lint** – Code quality checks (Black, isort, Flake8, Pylint).
+- **security** – Security scans (Bandit, Safety).
+- **test-analysis-scripts** – Tests for analysis scripts.
+- **test-modeling** – Tests for the modeling pipeline.
+- **test-images** – Image file validation.
+- **build-summary** – Aggregate and report the overall CI status.
 
-**Features:**
-- Automated formatting suggestions
-- Complexity metrics
-- Documentation coverage reporting
+**Key features:**
+- Matrix testing across Python versions.
+- Combined test + lint + security checks.
+- Code coverage reports uploaded as CI artifacts (and optionally to Codecov).
 
-### Configuration
+#### 2. Scheduled Tests (`.github/workflows/test-on-schedule.yml`)
 
-#### Environment Variables
+**Trigger:** Daily at 2 AM UTC and manual dispatch.
 
-The CI workflows may require the following environment variables (if testing with real database):
+**Purpose:** Run a more comprehensive set of tests (including slow tests) on a regular schedule to catch regressions that may not appear in fast CI runs.
+
+**Outputs:**
+- Full test-suite execution.
+- HTML test reports as downloadable artifacts.
+
+#### 3. Code Quality Checks (`.github/workflows/code-quality.yml`)
+
+**Trigger:** Pull Requests and manual dispatch.
+
+**Jobs:**
+- **format-check** – Verify code formatting (Black, isort).
+- **complexity-check** – Analyze code complexity (Radon).
+- **documentation-check** – Check docstring coverage (Interrogate, pydocstyle).
+
+These checks help keep the codebase maintainable and consistent with data-engineering best practices.
+
+### CI Configuration
+
+#### Environment Variables and Database Access
+
+When running tests that depend on a real PostgreSQL instance, the following environment variables are expected:
 
 ```yaml
 env:
@@ -1579,12 +1556,11 @@ env:
   PGUSER: ${{ secrets.PGUSER }}
   PGPASSWORD: ${{ secrets.PGPASSWORD }}
 ```
-
-**Note:** Database tests are skipped by default in CI.
+Note: By default, CI is configured to skip database tests unless these secrets are explicitly set. This keeps the pipeline fast and reliable while still allowing integration tests against a real database when desired.
 
 #### Secrets Setup
 
-If you need to add secrets to your repository:
+To enable database-backed tests in CI:
 
 1. Go to Settings → Secrets and variables → Actions
 2. Add new repository secrets:
@@ -1606,6 +1582,8 @@ Recommended branch protection rules for `main`:
 - [x] Require branches to be up to date before merging
 - [x] Include administrators
 
+This ensures that only code that passes tests and linters is merged into the main line.
+
 ### Workflow Status Badges
 
 The following badges are displayed at the top of this README:
@@ -1615,7 +1593,9 @@ The following badges are displayed at the top of this README:
 ![Code Quality](https://github.com/lingyuehao/706_final_project/actions/workflows/code-quality.yml/badge.svg?branch=main)
 ```
 
-### Local Testing
+They provide a quick visual indication of whether the latest commits on main are passing CI and code-quality checks.
+
+### Local Testing and CI Alignment
 
 Before pushing, run tests locally:
 
@@ -1635,88 +1615,7 @@ make lint
 # Auto-format
 make format
 ```
-
-### Customization
-
-#### Modify Python Versions
-
-Edit the matrix in `ci.yml`:
-
-```yaml
-strategy:
-  matrix:
-    python-version: ['3.9', '3.10', '3.11', '3.12']
-```
-
-#### Add New Test Jobs
-
-1. Create new job in `ci.yml`:
-```yaml
-new-test-job:
-  name: New Test Category
-  runs-on: ubuntu-latest
-  steps:
-    - uses: actions/checkout@v4
-    - name: Run new tests
-      run: pytest tests/test_new.py -v
-```
-
-2. Add to `build-summary` needs:
-```yaml
-needs: [test, lint, security, new-test-job]
-```
-
-#### Modify Test Markers
-
-Edit test commands to include/exclude markers:
-
-```yaml
-- name: Run specific tests
-  run: |
-    pytest tests/ -v -m "unit and not slow"
-```
-
-### Troubleshooting
-
-#### Tests Fail in CI but Pass Locally
-
-**Common causes:**
-- Python version differences
-- Missing environment variables
-- Different dependency versions
-- Operating system differences
-
-**Solutions:**
-1. Test locally with same Python version as CI
-2. Use `tox` for multi-version testing
-3. Check GitHub Actions logs for specific errors
-
-#### Slow CI Builds
-
-**Optimization strategies:**
-1. Cache pip dependencies:
-```yaml
-- uses: actions/setup-python@v4
-  with:
-    cache: 'pip'
-```
-
-2. Parallelize tests:
-```bash
-pytest tests/ -n auto
-```
-
-3. Skip slow tests in main CI:
-```bash
-pytest tests/ -m "not slow"
-```
-
-#### Coverage Reports Not Uploading
-
-**Check:**
-1. Codecov token is set in secrets
-2. `coverage.xml` is generated
-3. Codecov action is properly configured
+This helps catch issues early and ensures local development aligns with CI expectations.
 
 ---
 
