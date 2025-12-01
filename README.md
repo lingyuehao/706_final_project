@@ -25,15 +25,31 @@
 
 ## Goals
 
-- Identify opportunity of subrogation in first-party physical damage claims.
-- Understand key indicators of subrogation opportunity.
-- Provide a recommendation on how this information could be leveraged at TriGuard Insurance Company.
+### Business Problem
+
+- Identify opportunities for subrogation in first-party physical damage claims.
+- Understand key indicators of strong subrogation opportunity (documentation, liability, payout).
+- Provide recommendations on how this information can be operationalized at TriGuard Insurance.
+
+### Data Engineering System Goals
+
+- Design and implement an end-to-end **data engineering pipeline** for the TriGuard subrogation use case, from raw Kaggle CSVs to curated data marts and ML outputs.
+- Ingest and normalize raw data into a **5-table relational schema** on PostgreSQL (local + AWS RDS) with clear staging (`stg`) and mart (`mart`) layers.
+- Build reproducible, containerized infrastructure using **VS Code Dev Containers + Docker Compose + Airflow**, so the full pipeline can be brought up with a single command.
+- Use **SQL + Polars/Python** to support downstream analytics and machine learning, including regression analysis and an F1-optimized subrogation prediction model.
+- Orchestrate the ML pipeline with **Apache Airflow DAGs**, including scheduled training, artifact management, and logging.
+- Enforce **data engineering best practices** — testing, CI/CD (GitHub Actions), code quality, and documentation — to ensure scalability, reliability, and maintainability.
+
 
 ---
 
 ## Project Overview
 
 This README provides a comprehensive end-to-end guide for the **TriGuard Insurance Subrogation Prediction System**, covering infrastructure setup, data engineering, exploratory analysis, machine learning pipeline development, testing, CI/CD automation, and production deployment.
+
+**Data Source:** [2025 Travelers UMC](https://www.kaggle.com/competitions/2025-travelers-umc)
+
+---
 
 ### Documentation Structure
 
@@ -54,6 +70,10 @@ This README provides a comprehensive end-to-end guide for the **TriGuard Insuran
 - **Part 8: Web App 1.0** - Production-ready web application deployed on Netlify for subrogation triage and prediction.
 
 - **Part 9: Apache Airflow ML Pipeline** - Production-grade orchestration using Apache Airflow in Docker, with automated DAG execution, artifact management, and scheduled model retraining.
+
+- **Part 10: Refactoring** - Codebase improvements including modularization, documentation, type hinting, and adherence to best practices.
+
+- **Part 11: Data Engineering Principles** - Implementation of data engineering best practices including data governance, reproducibility, scalability, and maintainability.
 
 ---
 
@@ -133,7 +153,6 @@ This README provides a comprehensive end-to-end guide for the **TriGuard Insuran
 ├─ pytest.ini                # Pytest configuration
 ├─ Makefile                  # Build automation (test, lint, format)
 ├─ .env.example              # Template for environment variables
-├─ AIRFLOW_SETUP.md          # Airflow setup documentation
 └─ README.md                 # This file (2000+ lines)
 ```
 
