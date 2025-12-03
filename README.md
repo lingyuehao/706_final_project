@@ -49,11 +49,14 @@ This README provides a comprehensive end-to-end guide for the **TriGuard Insuran
 
 **Data Source:** [2025 Travelers UMC](https://www.kaggle.com/competitions/2025-travelers-umc)
 
-Our dataset comes from the ongoing Travelers Insurance modeling competition. The current competition page is only accessible to participating teams, and the official download link will be publicly available later. In our project, the actual dataset we use is stored locally in our repository at:
+<p align="center">
+  <img src="2025.jpg" alt="TriGuard data" width="700">
+</p>
+
+
+Our dataset comes from the ongoing Travelers Insurance modeling competition. The current competition page is only accessible to participating teams, and the official download link will be publicly available later on Kaggle. In our project, the actual dataset we use is stored locally in our repository at:
 /data/Training_TriGuard.csv
 
-Another similar dataset used for competition last year is provided only as an example of the data format:
-https://www.kaggle.com/competitions/2024-travelers-ness-statathon/data
 
 ---
 
@@ -159,6 +162,7 @@ https://www.kaggle.com/competitions/2024-travelers-ness-statathon/data
 ├─ Makefile                  # Build automation (test, lint, format)
 ├─ .env.example              # Template for environment variables
 └─ README.md                 # This file (2000+ lines)
+└─ 2025.jpg                 # Screenshot of data source
 ```
 
 **Key Directories:**
