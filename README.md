@@ -3,6 +3,18 @@
 ![CI Pipeline](https://github.com/lingyuehao/706_final_project/actions/workflows/ci.yml/badge.svg?branch=main)
 ![Code Quality](https://github.com/lingyuehao/706_final_project/actions/workflows/code-quality.yml/badge.svg?branch=main)
 
+## Group member Acknowledgement
+**Lingyue Hao: Vehicle analysis, statistical modeling, Front-end Developer**
+
+**Mingjie Wei: Data engineering, AWS infrastructure, Airflow orchestration**
+
+**Tina Yuan: Accident analysis, Polars regression, feature engineering**
+
+**Bruce Chen: Driver analysis, logistic regression, CI/CD pipelines**
+
+**Brynn Zhang: Policyholder analysis, SQL queries, documentation**
+
+
 ## Table of Contents
 
 - [Goals](#goals)
@@ -2147,9 +2159,3 @@ These eight principles work synergistically throughout the TriGuard system. The 
 ---
 
 
-## Group member Acknowledgement
-**Lingyue Hao**
-**Mingjie Wei**
-**Tina Yuan**
-**Bruce Chen**
-**Brynn Zhang**
